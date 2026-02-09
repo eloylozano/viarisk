@@ -1,0 +1,72 @@
+---
+// src/components/ChartVial.astro
+---
+
+<div class="relative w-full h-full min-h-[350px]">
+    <canvas id="mainChart"></canvas>
+  </div>
+  
+  <script>
+    import Chart from 'chart.js/auto';
+  
+    // 1. Configuración de colores (coincidiendo con tu global.css)
+    const colors = {
+      forest: '#10b981',
+      forestLight: 'rgba(16, 185, 129, 0.2)',
+      grid: 'rgba(255, 255, 255, 0.05)',
+      text: '#9ca3af'
+    };
+  
+    // 2. Función para inicializar la gráfica
+    function initChart() {
+      const ctx = document.getElementById('mainChart') as HTMLCanvasElement;
+      if (!ctx) return;
+  
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul'], // Luego vendrán de tu JSON
+          datasets: [{
+            label: 'Probabilidad Media de Siniestralidad',
+            data: [12, 19, 15, 8, 22, 30, 25],
+            borderColor: colors.forest,
+            backgroundColor: colors.forestLight,
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4, // Curva suave (estilo moderno)
+            pointRadius: 4,
+            pointBackgroundColor: colors.forest
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#020617',
+              titleColor: '#10b981',
+              borderColor: 'rgba(255,255,255,0.1)',
+              borderWidth: 1,
+              padding: 12,
+              displayColors: false
+            }
+          },
+          scales: {
+            y: {
+              grid: { color: colors.grid },
+              ticks: { color: colors.text, font: { size: 10 } },
+              beginAtZero: true
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: colors.text, font: { size: 10 } }
+            }
+          }
+        }
+      });
+    }
+  
+    // Ejecutar al cargar la página
+    initChart();
+  </script>

@@ -1,0 +1,220 @@
+---
+// src/components/Simulador.astro
+
+const provincias = [
+  "MADRID",
+  "BARCELONA",
+  "VALENCIA",
+  "ALICANTE",
+  "SEVILLA",
+  "MÁLAGA",
+  "MURCIA",
+  "CÁDIZ",
+  "BIZKAIA",
+  "A CORUÑA",
+  "ASTURIAS",
+  "ZARAGOZA",
+];
+
+const vias = [
+  { id: "CONVENCIONAL", label: "Ctra. Convencional (Calzada única)" },
+  { id: "AUTOVÍA", label: "Autovía" },
+  { id: "AUTOPISTA", label: "Autopista" },
+  { id: "CALLE", label: "Calle / Casco Urbano" },
+  { id: "CAMINO", label: "Camino Vecinal" },
+];
+
+const climas = [
+  { id: "DESPEJADO", label: "Cielo Despejado" },
+  { id: "LLUVIA", label: "Lluvia / Humedad" },
+  { id: "NIEBLA", label: "Niebla Intensa" },
+  { id: "NIEVE", label: "Nieve / Granizo" },
+  { id: "VIENTO", label: "Viento Fuerte" },
+];
+
+// NUEVOS: Basados en tus diccionarios del Excel
+const firmes = [
+  { id: "SECO", label: "Seco y Limpio" },
+  { id: "MOJADO", label: "Mojado / Encharcado" },
+  { id: "BARRO", label: "Barro / Gravilla" },
+  { id: "HIELO", label: "Hielo / Nieve" },
+];
+
+const trazados = [
+  { id: "RECTA", label: "Recta" },
+  { id: "CURVA", label: "Curva Señalizada" },
+  { id: "CURVA_SIN", label: "Curva Sin Señalizar" },
+];
+---
+
+<section id="simulador" class="py-12">
+  <div
+    class="bg-ocean-900/50 backdrop-blur-md border border-white/10 p-8 rounded-3xl shadow-xl max-w-2xl mx-auto"
+  >
+    <div class="mb-8 text-center md:text-left">
+      <h3
+        class="text-2xl font-display font-bold text-white mb-2 italic uppercase"
+      >
+        Predictor de Riesgo <span class="text-forest-500">ML</span>
+      </h3>
+      <p class="text-gray-400 text-sm font-sans">
+        Configura los factores de la vía para obtener la probabilidad de
+        accidente mortal según el modelo XGBoost entrenado con datos DGT.
+      </p>
+    </div>
+
+    <form id="form-predict" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex flex-col gap-2">
+          <label
+            class="text-[10px] font-bold uppercase tracking-[0.2em] text-forest-500"
+            >Localización</label
+          >
+          <select
+            id="PROVINCIA"
+            required
+            class="bg-ocean-900/80 border border-white/10 text-white rounded-xl p-3 text-sm focus:ring-2 focus:ring-forest-500 outline-none"
+          >
+            {provincias.map((p) => <option value={p}>{p}</option>)}
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label
+            class="text-[10px] font-bold uppercase tracking-[0.2em] text-forest-500"
+            >Tipo de Vía</label
+          >
+          <select
+            id="TIPO_VIA_NOMBRE"
+            required
+            class="bg-ocean-900/80 border border-white/10 text-white rounded-xl p-3 text-sm focus:ring-2 focus:ring-forest-500 outline-none"
+          >
+            {vias.map((v) => <option value={v.id}>{v.label}</option>)}
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label
+            class="text-[10px] font-bold uppercase tracking-[0.2em] text-forest-500"
+            >Meteorología</label
+          >
+          <select
+            id="CONDICION_METEO"
+            required
+            class="bg-ocean-900/80 border border-white/10 text-white rounded-xl p-3 text-sm focus:ring-2 focus:ring-forest-500 outline-none"
+          >
+            {climas.map((c) => <option value={c.id}>{c.label}</option>)}
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label
+            class="text-[10px] font-bold uppercase tracking-[0.2em] text-forest-500"
+            >Estado del Firme</label
+          >
+          <select
+            id="CONDICION_FIRME"
+            required
+            class="bg-ocean-900/80 border border-white/10 text-white rounded-xl p-3 text-sm focus:ring-2 focus:ring-forest-500 outline-none"
+          >
+            {firmes.map((f) => <option value={f.id}>{f.label}</option>)}
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-2 md:col-span-2">
+          <label
+            class="text-[10px] font-bold uppercase tracking-[0.2em] text-forest-500"
+            >Diseño de la Carretera</label
+          >
+          <select
+            id="TRAZADO_PLANTA"
+            required
+            class="bg-ocean-900/80 border border-white/10 text-white rounded-xl p-3 text-sm focus:ring-2 focus:ring-forest-500 outline-none"
+          >
+            {trazados.map((t) => <option value={t.id}>{t.label}</option>)}
+          </select>
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        class="w-full bg-forest-500 hover:bg-forest-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-forest-900/40 active:scale-[0.98] uppercase tracking-widest text-xs"
+      >
+        Calcular Índice de Letalidad
+      </button>
+    </form>
+
+    <div
+      id="resultado-container"
+      class="mt-8 hidden animate-in fade-in slide-in-from-bottom-4 duration-500"
+    >
+      <div
+        id="card-resultado"
+        class="border-t-4 p-8 rounded-2xl bg-white/5 backdrop-blur-sm flex flex-col items-center text-center"
+      >
+        <div id="res-icon" class="mb-4"></div>
+        <span
+          id="res-categoria"
+          class="text-4xl font-display font-black uppercase tracking-tighter mb-2"
+        ></span>
+        <div class="bg-white/10 px-4 py-2 rounded-full">
+          <span class="text-gray-400 text-[10px] uppercase font-bold"
+            >Probabilidad:</span
+          >
+          <span
+            id="res-prob"
+            class="text-white font-mono font-bold text-lg ml-2"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const form = document.getElementById("form-predict");
+  const resContainer = document.getElementById("resultado-container");
+  const cardRes = document.getElementById("card-resultado");
+  const resCat = document.getElementById("res-categoria");
+  const resProb = document.getElementById("res-prob");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const ahora = new Date();
+    const hora = ahora.getHours();
+    const mes = ahora.getMonth() + 1;
+    let diaSemana = ahora.getDay();
+    diaSemana = diaSemana === 0 ? 7 : diaSemana;
+
+    const data = {
+      HORA: hora,
+      MES: mes,
+      DIA_SEMANA: diaSemana,
+      PROVINCIA: document.getElementById("PROVINCIA").value,
+      TIPO_VIA_NOMBRE: document.getElementById("TIPO_VIA_NOMBRE").value,
+      CONDICION_METEO: document.getElementById("CONDICION_METEO").value,
+      CONDICION_FIRME: document.getElementById("CONDICION_FIRME").value, // Envío nuevo
+      TRAZADO_PLANTA: document.getElementById("TRAZADO_PLANTA").value, // Envío nuevo
+    };
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      resCat.innerText = result.categoria;
+      resCat.style.color = result.color;
+      resProb.innerText = `${result.probabilidad}%`;
+      cardRes.style.borderColor = result.color;
+
+      resContainer.classList.remove("hidden");
+      resContainer.scrollIntoView({ behavior: "smooth", block: "center" });
+    } catch (error) {
+      alert("Error: Verifica que el servidor FastAPI esté activo.");
+    }
+  });
+</script>

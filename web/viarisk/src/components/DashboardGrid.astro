@@ -1,0 +1,177 @@
+---
+import ChartCard from "./ChartCard.astro";
+
+// --- IMPORTACIÓN DE DATOS ---
+import statsKpis from "../data/stats_global_kpis.json";
+import probHoraAnual from "../data/prob_mortalidad_hora_anual.json";
+import statsTipologiaAnual from "../data/stats_tipologia_anual.json";
+import statsMotosAnual from "../data/stats_motoristas_interaccion_anual.json";
+import statsIluminacionAnual from "../data/stats_iluminacion_anual.json";
+import statsFirmeAnual from "../data/stats_firme_anual.json";
+import statsProvinciasAnual from "../data/stats_provincias_anual.json";
+
+const años = [2024, 2023, 2022, 2021, 2020];
+---
+
+<div class="flex flex-col gap-6 md:gap-8 w-full pb-20 px-4 md:px-0" id="dashboard">
+  
+  <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2 md:gap-3 bg-white/5 p-2 rounded-2xl border border-white/5 w-full lg:w-fit self-center lg:self-start">
+    <button
+      data-year-btn="all"
+      class="flex-1 lg:flex-none px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all bg-forest-500 text-white shadow-lg shadow-forest-500/20"
+    >
+      Global
+    </button>
+    {años.map((año) => (
+      <button
+        data-year-btn={año.toString()}
+        class="flex-1 lg:flex-none px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all bg-transparent text-white/40 hover:text-white hover:bg-white/5"
+      >
+        {año}
+      </button>
+    ))}
+  </div>
+
+  <section class="flex flex-col gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <div class="lg:col-span-3 min-h-[350px] md:h-[320px] relative overflow-hidden bg-black/40 border border-white/5 rounded-3xl p-4 md:p-8 shadow-lg transition-all duration-500">
+        
+        <div id="wrapper-evol" class="h-full w-full transition-all duration-500 opacity-100 scale-100">
+          <ChartCard
+            id="chart-evol"
+            title="Evolución Fallecidos (Moto)"
+            data={statsKpis}
+            xKey="ANIO"
+            yKey="total_muertos_moto"
+            type="line"
+            color="#10b981"
+          />
+        </div>
+
+        <div id="wrapper-kpis" class="absolute inset-0 flex flex-col md:flex-row items-center justify-center md:justify-around gap-8 md:gap-0 p-6 md:p-8 transition-all duration-500 opacity-0 translate-y-10 pointer-events-none">
+          <div class="text-center">
+            <span class="text-forest-500 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] block mb-2">Siniestros Totales</span>
+            <div class="text-5xl md:text-7xl lg:text-8xl font-black text-white tracking-tighter tabular-nums leading-none" id="kpi-total-accidentes">0</div>
+            <div id="kpi-anio-label" class="text-white/20 text-[10px] mt-3 font-mono uppercase tracking-widest">Global</div>
+          </div>
+
+          <div class="h-px w-20 md:h-24 md:w-px bg-white/10"></div>
+
+          <div class="text-center">
+            <span class="text-red-500 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] block mb-2">Índice de Letalidad</span>
+            <div class="text-5xl md:text-7xl lg:text-8xl font-black text-white tracking-tighter tabular-nums leading-none" id="kpi-letalidad">0%</div>
+            <div id="kpi-fallecidos-sub" class="text-red-500/30 text-[10px] mt-3 font-mono uppercase tracking-widest italic">Análisis General</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:col-span-3">
+        <div class="md:col-span-1">
+            <ChartCard id="chart-hora" title="Letalidad por Hora" data={probHoraAnual} xKey="HORA" yKey="Probabilidad_Mortal" type="line" color="#3b82f6" />
+        </div>
+        <div class="md:col-span-1 lg:col-span-2">
+            <ChartCard id="chart-tipo" title="Frecuencia por Tipo de Accidente" data={statsTipologiaAnual} xKey="TIPO_ACCIDENTE_NOMBRE" yKey="Frecuencia" type="bar" color="#8b5cf6" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+      <div class="md:col-span-2 lg:col-span-1">
+        <ChartCard id="chart-motos" title="Interacción" data={statsMotosAnual} xKey="TIPO_INTERACCION" yKey="TOTAL" type="doughnut" color="#f59e0b" />
+      </div>
+      <div class="lg:col-span-2">
+        <ChartCard id="chart-ilumin" title="Riesgo Iluminación" data={statsIluminacionAnual} xKey="CONDICION_ILUMINACION" yKey="ES_MORTAL" type="bar" color="#fbbf24" />
+      </div>
+      <div class="lg:col-span-2">
+        <ChartCard id="chart-firme" title="Riesgo Estado Firme" data={statsFirmeAnual} xKey="CONDICION_FIRME" yKey="ES_MORTAL" type="bar" color="#6366f1" />
+      </div>
+      <div class="col-span-1 md:col-span-2 lg:col-span-5">
+        <ChartCard id="chart-prov" title="Fallecidos por Provincias" data={statsProvinciasAnual} xKey="PROVINCIA" yKey="Fallecidos" type="bar" color="#ef4444" />
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  // ... (El script se mantiene igual ya que la lógica no cambia, pero asegúrate de que use las funciones de animación que corregimos antes)
+  const buttons = document.querySelectorAll("[data-year-btn]");
+  const wrapperEvol = document.getElementById("wrapper-evol");
+  const wrapperKpis = document.getElementById("wrapper-kpis");
+
+  const getKpiData = () => {
+    const canvas = document.querySelector("#chart-evol canvas") as HTMLCanvasElement;
+    return JSON.parse(canvas?.dataset.chart || "[]");
+  };
+
+  function animateNumber(id, target) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    let current = 0;
+    const steps = 30;
+    const increment = target / steps;
+    const timer = setInterval(() => {
+      current += increment;
+      if (current >= target) {
+        el.textContent = Math.round(target).toLocaleString();
+        clearInterval(timer);
+      } else {
+        el.textContent = Math.round(current).toLocaleString();
+      }
+    }, 20);
+  }
+
+  function animatePercentage(id, target) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    let current = 0;
+    const timer = setInterval(() => {
+      current += target / 30;
+      if (current >= target) {
+        el.textContent = target.toFixed(2) + "%";
+        clearInterval(timer);
+      } else {
+        el.textContent = current.toFixed(2) + "%";
+      }
+    }, 20);
+  }
+
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const year = btn.getAttribute("data-year-btn");
+
+      buttons.forEach((b) => {
+        b.classList.remove("bg-forest-500", "text-white", "shadow-lg");
+        b.classList.add("bg-transparent", "text-white/40");
+      });
+      btn.classList.add("bg-forest-500", "text-white", "shadow-lg");
+      btn.classList.remove("bg-transparent", "text-white/40");
+
+      if (year === "all") {
+        wrapperEvol?.classList.remove("opacity-0", "scale-95");
+        wrapperKpis?.classList.add("opacity-0", "translate-y-10", "pointer-events-none");
+      } else {
+        wrapperEvol?.classList.add("opacity-0", "scale-95");
+        wrapperKpis?.classList.remove("opacity-0", "translate-y-10", "pointer-events-none");
+
+        const data = getKpiData();
+        const yearData = data.find((d: any) => String(d.ANIO) === year);
+
+        if (yearData) {
+          const totalMuertos = (yearData.total_muertos_moto || 0) + (yearData.total_muertos_coche || 0);
+          const totalAccidentes = yearData.total_accidentes || 0;
+          const letalidad = totalAccidentes > 0 ? (totalMuertos / totalAccidentes) * 100 : 0;
+
+          animateNumber("kpi-total-accidentes", totalAccidentes);
+          animatePercentage("kpi-letalidad", letalidad);
+          
+          document.getElementById("kpi-anio-label").textContent = `Registros ${year}`;
+          document.getElementById("kpi-fallecidos-sub").textContent = `${totalMuertos.toLocaleString()} Fallecidos Totales`;
+        }
+      }
+      window.dispatchEvent(new CustomEvent("filterCharts", { detail: { year } }));
+    });
+  });
+</script>

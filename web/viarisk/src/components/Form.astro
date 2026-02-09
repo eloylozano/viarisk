@@ -1,0 +1,75 @@
+---
+// Aquí podrías importar estilos o scripts de servidor si fuera necesario
+---
+<div class="bg-white p-8 rounded-lg shadow-lg">
+    <h2 class="text-2xl font-bold mb-4">Simulador de Riesgo Vial</h2>
+    
+    <form id="predict-form" class="space-y-4">
+      <div>
+        <label>Provincia</label>
+        <select id="PROVINCIA" class="w-full border p-2 rounded">
+          <option value="MADRID">Madrid</option>
+          <option value="BARCELONA">Barcelona</option>
+          </select>
+      </div>
+  
+      <div>
+        <label>Tipo de Vía</label>
+        <select id="TIPO_VIA_NOMBRE" class="w-full border p-2 rounded">
+          <option value="CARRETERA CONVENCIONAL">Carretera Convencional</option>
+          <option value="AUTOPISTA">Autopista</option>
+          <option value="CALLE">Calle / Zona Urbana</option>
+        </select>
+      </div>
+  
+      <div>
+        <label>Condición Meteorológica</label>
+        <select id="CONDICION_METEO" class="w-full border p-2 rounded">
+          <option value="DESPEJADO">Despejado</option>
+          <option value="LLUVIA">Lluvia</option>
+          <option value="NIEBLA">Niebla</option>
+        </select>
+      </div>
+  
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded">Calcular Riesgo</button>
+    </form>
+  
+    <div id="resultado" class="mt-6 hidden p-4 rounded text-center font-bold">
+      <p id="categoria-texto"></p>
+      <p id="probabilidad-texto" class="text-sm opacity-80"></p>
+    </div>
+  </div>
+  
+  <script>
+    const form = document.getElementById('predict-form');
+    const ahora = new Date();
+  
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      // Captura automática de tiempo
+      const datos = {
+        HORA: ahora.getHours(),
+        MES: ahora.getMonth() + 1,
+        DIA_SEMANA: ahora.getDay() === 0 ? 7 : ahora.getDay(),
+        PROVINCIA: document.getElementById('PROVINCIA').value,
+        TIPO_VIA_NOMBRE: document.getElementById('TIPO_VIA_NOMBRE').value,
+        CONDICION_METEO: document.getElementById('CONDICION_METEO').value
+      };
+  
+      const res = await fetch('http://127.0.0.1:8000/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+      });
+  
+      const data = await res.json();
+      
+      // Mostrar resultado
+      const divRes = document.getElementById('resultado');
+      divRes.style.backgroundColor = data.color;
+      divRes.classList.remove('hidden');
+      document.getElementById('categoria-texto').innerText = data.categoria;
+      document.getElementById('probabilidad-texto').innerText = `Probabilidad: ${data.probabilidad}%`;
+    });
+  </script>

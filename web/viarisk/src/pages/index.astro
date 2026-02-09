@@ -1,0 +1,29 @@
+---
+import Layout from '../layouts/Layout.astro';
+import HeroHome from '../components/HeroHome.astro';
+// import DashboardCards from '../components/DashboardCards.astro'; // Si tienes gráficas
+import Simulador from '../components/Simulador.astro';
+---
+
+<Layout title="ViaRisk - Estación de Control">
+  <main class="space-y-20 pb-20">
+    
+    <HeroHome />
+
+    <section class="container mx-auto px-4">
+       <h2 class="text-white font-display text-3xl font-bold mb-8 uppercase italic border-l-4 border-forest-500 pl-4">
+         Análisis de Siniestralidad Histórica
+       </h2>
+       <!-- <DashboardCards /> -->
+    </section>
+
+    <section >
+      <div class="container mx-auto px-4 text-center mb-12">
+         <span class="text-forest-500 font-bold tracking-[0.3em] uppercase text-xs">Laboratorio Predictivo</span>
+         <h2 class="text-white font-display text-4xl font-bold mt-2">Pon a prueba la IA</h2>
+      </div>
+      <Simulador />
+    </section>
+
+  </main>
+</Layout>

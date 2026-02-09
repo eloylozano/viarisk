@@ -1,0 +1,209 @@
+---
+// ChartCard.astro corregido para donuts más pequeños
+interface Props {
+  id: string;
+  title: string;
+  data: any[];
+  xKey: string;
+  yKey: string;
+  type?: "line" | "bar" | "pie" | "doughnut";
+  color?: string;
+}
+
+const {
+  id,
+  title,
+  data,
+  xKey,
+  yKey,
+  type = "line",
+  color = "#10b981",
+} = Astro.props;
+---
+
+<div
+  class="bg-black/40 border border-white/5 rounded-2xl p-5 flex flex-col h-[300px] group hover:border-forest-500/30 transition-all shadow-lg"
+>
+  <h4
+    class="text-white/50 text-[10px] uppercase tracking-[0.2em] mb-4 font-black group-hover:text-forest-500 transition-colors"
+  >
+    {title}
+  </h4>
+  <div class="flex-grow relative flex items-center justify-center">
+    <canvas
+      id={id}
+      data-chart={JSON.stringify(data)}
+      data-x={xKey}
+      data-y={yKey}
+      data-type={type}
+      data-color={color}
+      class={type === "doughnut" ? "max-h-[180px]" : ""}></canvas>
+  </div>
+</div>
+
+<script>
+  import Chart from "chart.js/auto";
+  import { MAPPINGS } from "../data/mappings.js";
+
+  type MappingType = Record<string, Record<string | number, string>>;
+  const typedMappings = MAPPINGS as MappingType;
+
+  const setupChart = () => {
+    const canvases =
+      document.querySelectorAll<HTMLCanvasElement>("canvas[data-chart]");
+
+    canvases.forEach((canvas) => {
+      const originalData = JSON.parse(canvas.dataset.chart || "[]");
+      const xKey = canvas.dataset.x || "";
+      const yKey = canvas.dataset.y || "";
+      const chartType = (canvas.dataset.type || "line") as any;
+      const mainColor = canvas.dataset.color || "#10b981";
+      const chartId = canvas.id;
+
+      const existingChart = Chart.getChart(canvas);
+      if (existingChart) existingChart.destroy();
+
+      const chartInstance = new Chart(canvas, {
+        type: chartType,
+        data: {
+          labels: [],
+          datasets: [
+            {
+              data: [],
+              borderColor: chartType === "doughnut" ? "transparent" : mainColor,
+              backgroundColor:
+                chartType === "bar"
+                  ? `${mainColor}44`
+                  : chartType === "doughnut"
+                    ? ["#10b981", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"]
+                    : `${mainColor}11`,
+              fill: true,
+              tension: 0.4,
+              borderWidth: 2,
+              pointRadius: chartType === "line" ? 0 : 4,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          // --- AQUÍ ESTÁ EL TRUCO PARA EL DONUT ---
+          cutout: chartType === "doughnut" ? "75%" : undefined,
+          radius: chartType === "doughnut" ? "85%" : undefined,
+          // ----------------------------------------
+          plugins: {
+            legend: {
+              display: chartType === "doughnut",
+              position: "bottom", // Leyenda abajo para dejar espacio al círculo
+              labels: {
+                color: "#9ca3af",
+                font: { size: 10 },
+                padding: 15,
+                usePointStyle: true,
+              },
+            },
+            tooltip: {
+              backgroundColor: "#111",
+              padding: 12,
+              titleFont: { size: 12 },
+              bodyFont: { size: 12 },
+            },
+          },
+          scales:
+            chartType === "doughnut"
+              ? {
+                  x: { display: false },
+                  y: { display: false },
+                }
+              : {
+                  y: {
+                    grid: { color: "rgba(255,255,255,0.05)" },
+                    ticks: { color: "#9ca3af", font: { size: 11 } },
+                  },
+                  x: {
+                    grid: { display: false },
+                    ticks: { color: "#9ca3af", font: { size: 11 } },
+                  },
+                },
+        },
+      });
+
+      // Lógica de updateChartData idéntica a la anterior...
+      const updateChartData = (selectedYear: string) => {
+
+        
+        let processedData: Record<string, any>[] = [];
+        if (selectedYear === "all") {
+          const groups: Record<string, { val: number; count: number }> = {};
+          originalData.forEach((item: any) => {
+            const k = item[xKey];
+            const v = item[yKey];
+            if (!groups[k]) groups[k] = { val: 0, count: 0 };
+            groups[k].val += v;
+            groups[k].count += 1;
+          });
+          processedData = Object.keys(groups).map((k) => ({
+            [xKey]: k,
+            [yKey]: groups[k].val / groups[k].count,
+          }));
+        } else {
+          processedData = originalData.filter(
+            (d: any) => String(d.ANIO || d.ANYO) === String(selectedYear)
+          );
+        }
+
+        if (
+          chartId.includes("ilumin") ||
+          chartId.includes("firme") ||
+          chartId.includes("prov") ||
+          chartId.includes("tipo")
+        ) {
+          processedData.sort((a, b) => b[yKey] - a[yKey]);
+
+          // Si quieres limitar a un Top 10 para que no sea infinito:
+          if (chartId.includes("prov")) {
+            processedData = processedData.slice(0, 10);
+          }
+        } else {
+          // Ordenación normal para el resto (Horas, años, etc)
+          processedData.sort((a, b) => {
+            const vA = a[xKey];
+            const vB = b[xKey];
+            return !isNaN(vA) && !isNaN(vB)
+              ? Number(vA) - Number(vB)
+              : String(vA).localeCompare(String(vB));
+          });
+        }
+        if (chartId.includes("prov") || chartId.includes("tipo")) {
+          processedData.sort((a, b) => b[yKey] - a[yKey]);
+          processedData = processedData.slice(0, 10);
+        }
+
+        chartInstance.data.labels = processedData.map((d) => {
+          const val = d[xKey];
+          return typedMappings[xKey] && typedMappings[xKey][val]
+            ? typedMappings[xKey][val]
+            : val;
+        });
+        chartInstance.data.datasets[0].data = processedData.map((d) => d[yKey]);
+        chartInstance.update();
+      };
+
+      updateChartData("all");
+      const handleFilter = (e: any) => updateChartData(e.detail.year);
+      window.addEventListener("filterCharts", handleFilter as EventListener);
+      document.addEventListener(
+        "astro:before-swap",
+        () =>
+          window.removeEventListener(
+            "filterCharts",
+            handleFilter as EventListener
+          ),
+        { once: true }
+      );
+    });
+  };
+
+  setupChart();
+  document.addEventListener("astro:after-swap", setupChart);
+</script>

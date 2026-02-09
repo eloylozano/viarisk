@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+/* 1. Importación de Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+
+@theme {
+    /* 2. Definición de la Paleta de Colores (Bosque y Océano) */
+    --color-forest-50: #f2f7f2;
+    --color-forest-500: #2d5a27;
+    /* Verde Bosque Base */
+    --color-forest-700: #1e3d1a;
+    --color-forest-900: #0b1a0a;
+
+    --color-ocean-50: #f0f4f8;
+    --color-ocean-500: #1a365d;
+    /* Azul Océano Base (Azul oscuro) */
+    --color-ocean-700: #102a43;
+    --color-ocean-900: #051626;
+
+    /* Colores de Riesgo (Semáforo) */
+    --color-risk-low: #00ff00;
+    --color-risk-mid: #ffa500;
+    --color-risk-high: #ff0000;
+
+    /* 3. Definición de Fuentes */
+    --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+    --font-display: "Urbanist", sans-serif;
+}
+
+/* 4. Estilos Base */
+@layer base {
+    body {
+        margin: 0;
+        padding: 0;
+        /* Fondo base oscuro */
+        background-color: var(--color-ocean-950);
+
+        /* Capa 1: El degradado que definimos (ahora fijo) */
+        background-image:
+            linear-gradient(135deg, rgba(2, 6, 23, 1) 0%, rgba(5, 46, 22, 0.4) 100%),
+            url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+
+        background-attachment: fixed;
+        color: white;
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Opcional: Un brillo sutil en una esquina para dar profundidad */
+    body::before {
+        content: "";
+        position: fixed;
+        top: -10%;
+        right: -10%;
+        width: 40%;
+        height: 40%;
+        background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
+        z-index: -1;
+        pointer-events: none;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+        @apply font-display font-bold tracking-tight text-ocean-900;
+    }
+
+    /* Degradado "Montaña" personalizado */
+    .bg-nature-gradient {
+        background: linear-gradient(135deg, var(--color-ocean-900) 0%, var(--color-forest-500) 100%);
+    }
+}

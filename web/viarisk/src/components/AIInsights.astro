@@ -1,0 +1,247 @@
+---
+import { MAPPINGS } from "../data/mappings.js";
+
+// Importación de los nuevos JSON generados
+import probHoraAnual from "../data/prob_mortalidad_hora_anual.json";
+import statsTipologiaAnual from "../data/stats_tipologia_anual.json";
+import statsMeteoAnual from "../data/stats_meteo_anual.json";
+import statsProvinciasAnual from "../data/stats_provincias_anual.json";
+
+interface MappingStructure {
+  [key: string]: Record<string | number, string>;
+}
+
+const mappings = MAPPINGS as MappingStructure;
+
+// Pasamos los datos a strings para que el cliente (JS) pueda procesarlos
+const rawData = {
+  hora: probHoraAnual,
+  tipo: statsTipologiaAnual,
+  meteo: statsMeteoAnual,
+  prov: statsProvinciasAnual,
+};
+---
+
+<div
+  class="lg:col-span-3 space-y-6"
+  id="insights-container"
+  data-raw={JSON.stringify(rawData)}
+>
+  <div class="flex items-center justify-between border-b border-white/10 pb-4">
+    <h3 class="text-white font-black text-xs uppercase tracking-[0.2em]">
+      IA Insights
+    </h3>
+    <span class="text-[9px] text-forest-500 font-mono animate-pulse"
+      >SISTEMA_ACTIVO</span
+    >
+  </div>
+
+  <div
+    class="group bg-white/[0.02] border border-white/5 p-5 rounded-[1.5rem] space-y-3"
+  >
+    <div class="flex justify-between items-end">
+      <span class="text-white/30 text-[9px] font-black uppercase"
+        >Franja Crítica</span
+      >
+      <span class="text-white font-mono text-xs" id="ins-hora-val">--:--H</span>
+    </div>
+    <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+      <div
+        id="ins-hora-bar"
+        class="h-full bg-forest-500 shadow-[0_0_15px_#10b981] transition-all duration-1000"
+        style="width: 0%"
+      >
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="bg-purple-500/5 border border-purple-500/20 p-6 rounded-[2rem] hover:bg-purple-500/10 transition-all"
+  >
+    <span class="text-purple-400/50 text-[9px] font-black uppercase block mb-1"
+      >Letalidad Máxima</span
+    >
+    <h4
+      class="text-white text-sm font-bold uppercase mb-2"
+      id="ins-tipo-nombre"
+    >
+      Cargando...
+    </h4>
+    <div
+      class="text-[10px] text-purple-400 font-mono bg-purple-400/10 w-fit px-2 py-1 rounded border border-purple-400/20"
+    >
+      RIESGO +<span id="ins-tipo-val">0</span>%
+    </div>
+  </div>
+
+  <div
+    class="bg-orange-500/5 border border-orange-500/20 p-6 rounded-[2rem] relative overflow-hidden group"
+  >
+    <div
+      class="absolute -right-2 -top-2 text-orange-500/10 group-hover:text-orange-500/20 group-hover:scale-110 transition-all duration-500"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="64"
+        height="64"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        ><path
+          d="M12 2a10 10 0 0 0-10 10c0 4.99 3.03 8 10 8s10-3.01 10-8A10 10 0 0 0 12 2z"
+        ></path><path d="M2 12h20"></path></svg
+      >
+    </div>
+    <span class="text-orange-400/50 text-[9px] font-black uppercase block mb-1"
+      >Foco Motoristas</span
+    >
+    <h4 class="text-white text-sm font-bold uppercase mb-1">Salidas de Vía</h4>
+    <p class="text-[10px] text-orange-200/60 leading-relaxed">
+      Mayor incidencia detectada en <span class="text-orange-400 font-bold"
+        >curvas</span
+      > de carreteras convencionales.
+    </p>
+  </div>
+
+  <div class="bg-red-500/5 border border-red-500/20 p-6 rounded-[2rem]">
+    <div class="flex justify-between items-start mb-1">
+      <span class="text-red-400/50 text-[9px] font-black uppercase"
+        >Punto Caliente Geo</span
+      >
+      <span class="text-red-500 font-mono text-xs font-bold"
+        ><span id="ins-prov-val">0</span>%</span
+      >
+    </div>
+    <h4
+      class="text-white text-sm font-bold uppercase mb-3"
+      id="ins-prov-nombre"
+    >
+      Cargando...
+    </h4>
+    <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+      <div
+        id="ins-prov-bar"
+        class="bg-red-500 h-full shadow-[0_0_10px_#ef4444] transition-all duration-1000"
+        style="width: 0%"
+      >
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="relative overflow-hidden bg-sky-600 p-6 rounded-[2.5rem] group transition-all duration-500 shadow-xl shadow-sky-900/20"
+  >
+    <div
+      class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full scale-150 blur-2xl group-hover:bg-white/20 transition-all"
+    >
+    </div>
+    <span class="text-sky-100/60 text-[9px] font-black uppercase block mb-1"
+      >Factor Externo</span
+    >
+    <div class="flex items-center gap-3 mb-3">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="text-white w-5 h-5"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        ><path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"></path><line
+          x1="8"
+          y1="16"
+          x2="8"
+          y2="21"></line><line x1="12" y1="18" x2="12" y2="23"></line><line
+          x1="16"
+          y1="16"
+          x2="16"
+          y2="21"></line></svg
+      >
+      <h4
+        class="text-white text-sm font-bold uppercase leading-tight"
+        id="ins-meteo-nombre"
+      >
+        Cargando...
+      </h4>
+    </div>
+    <p class="text-sky-100/80 text-[10px] leading-relaxed font-medium">
+      Precaución: El riesgo aumenta bajo condiciones de <span
+        class="text-white font-bold"
+        id="ins-meteo-desc">...</span
+      >.
+    </p>
+  </div>
+</div>
+
+<script>
+  import { MAPPINGS } from "../data/mappings.js";
+
+  const container = document.getElementById("insights-container");
+  const raw = JSON.parse(container?.dataset.raw || "{}");
+
+  const updateInsights = (year: string) => {
+    const filter = (arr: any[]) =>
+      year === "all" ? arr : arr.filter((d) => String(d.ANIO) === year);
+
+    // 1. PROCESAR HORA
+    const horaData = filter(raw.hora);
+    const topHora = horaData.reduce(
+      (prev: any, curr: any) =>
+        prev.Probabilidad_Mortal > curr.Probabilidad_Mortal ? prev : curr,
+      { HORA: 0, Probabilidad_Mortal: 0 }
+    );
+    document.getElementById("ins-hora-val")!.textContent =
+      `${topHora.HORA}:00H`;
+    document.getElementById("ins-hora-bar")!.style.width =
+      `${topHora.Probabilidad_Mortal * 100}%`;
+
+    // 2. PROCESAR TIPOLOGÍA
+    const tipoData = filter(raw.tipo);
+    const topTipo = tipoData.reduce(
+      (prev: any, curr: any) =>
+        prev.Mortalidad_Media > curr.Mortalidad_Media ? prev : curr,
+      { TIPO_ACCIDENTE_NOMBRE: 0, Mortalidad_Media: 0 }
+    );
+    document.getElementById("ins-tipo-nombre")!.textContent =
+      MAPPINGS.TIPO_ACCIDENTE_NOMBRE[topTipo.TIPO_ACCIDENTE_NOMBRE] ||
+      "Sin datos";
+    document.getElementById("ins-tipo-val")!.textContent = (
+      topTipo.Mortalidad_Media * 100
+    ).toFixed(0);
+
+    // 3. PROCESAR PROVINCIA
+    const provData = filter(raw.prov);
+    const topProv = provData.reduce(
+      (prev: any, curr: any) =>
+        prev.Riesgo_Medio > curr.Riesgo_Medio ? prev : curr,
+      { PROVINCIA: 0, Riesgo_Medio: 0 }
+    );
+    document.getElementById("ins-prov-nombre")!.textContent =
+      MAPPINGS.PROVINCIA[topProv.PROVINCIA] || "N/A";
+    document.getElementById("ins-prov-val")!.textContent = (
+      topProv.Riesgo_Medio * 100
+    ).toFixed(1);
+    document.getElementById("ins-prov-bar")!.style.width =
+      `${topProv.Riesgo_Medio * 100}%`;
+
+    // 4. PROCESAR METEO
+    const meteoData = filter(raw.meteo);
+    const topMeteo = meteoData.reduce(
+      (prev: any, curr: any) => (prev.ES_MORTAL > curr.ES_MORTAL ? prev : curr),
+      { CONDICION_METEO: 0, ES_MORTAL: 0 }
+    );
+    const nombreMeteo =
+      MAPPINGS.CONDICION_METEO[topMeteo.CONDICION_METEO] || "Despejado";
+    document.getElementById("ins-meteo-nombre")!.textContent = nombreMeteo;
+    document.getElementById("ins-meteo-desc")!.textContent =
+      nombreMeteo.toLowerCase();
+  };
+
+  // Escuchar el evento global de filtrado
+  window.addEventListener("filterCharts", (e: any) =>
+    updateInsights(e.detail.year)
+  );
+
+  // Carga inicial
+  updateInsights("all");
+</script>
