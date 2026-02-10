@@ -46,17 +46,17 @@ const meses = Object.entries(MAPPINGS.MES).map(([id, label]) => ({
         <div class="w-2 h-2 rounded-full bg-white/20 border border-white/10">
         </div>
         <div
-          class="w-[1px] h-full bg-gradient-to-b from-transparent via-white/10 to-transparent"
+          class="w-px h-full bg-linear-to-b from-transparent via-white/10 to-transparent"
         >
         </div>
         <div
           class="w-4 h-8 border-x border-white/10 flex flex-col justify-around items-center"
         >
-          <div class="w-full h-[1px] bg-white/10"></div>
-          <div class="w-full h-[1px] bg-white/10"></div>
+          <div class="w-full h-px bg-white/10"></div>
+          <div class="w-full h-px bg-white/10"></div>
         </div>
         <div
-          class="w-[1px] h-full bg-gradient-to-t from-transparent via-white/10 to-transparent"
+          class="w-px h-full bg-linear-to-t from-transparent via-white/10 to-transparent"
         >
         </div>
         <div class="w-2 h-2 rounded-full bg-white/20 border border-white/10">
@@ -64,10 +64,10 @@ const meses = Object.entries(MAPPINGS.MES).map(([id, label]) => ({
       </div>
 
       <div
-        class="flex-1 p-10 md:p-14 bg-white/[0.02] border-b lg:border-b-0 lg:border-r border-white/10 relative overflow-hidden group"
+        class="flex-1 p-10 md:p-14 bg-white/2 border-b lg:border-b-0 lg:border-r border-white/10 relative overflow-hidden group"
       >
         <div
-          class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_0%_0%,rgba(16,185,129,0.05)_0%,transparent_50%)]"
+          class="absolute top-0 left-0 w-full h-full bg-[radial-linear(circle_at_0%_0%,rgba(16,185,129,0.05)_0%,transparent_50%)]"
         >
         </div>
 
@@ -79,7 +79,7 @@ const meses = Object.entries(MAPPINGS.MES).map(([id, label]) => ({
               >
                 Engine Status: Operational
               </span>
-              <div class="h-[1px] flex-1 bg-white/5"></div>
+              <div class="h-px flex-1 bg-white/5"></div>
             </div>
             <h3
               class="text-4xl font-display font-black text-white leading-tight uppercase italic"
@@ -151,7 +151,7 @@ const meses = Object.entries(MAPPINGS.MES).map(([id, label]) => ({
             class="group/note bg-black/40 border border-white/5 rounded-2xl relative overflow-hidden transition-all duration-300"
           >
             <summary
-              class="list-none cursor-pointer p-5 flex items-center justify-between group-hover:bg-white/[0.02]"
+              class="list-none cursor-pointer p-5 flex items-center justify-between group-hover:bg-white/2"
             >
               <div
                 class="absolute -top-2 -left-2 w-4 h-4 border-t border-l border-forest-500/50"
@@ -185,7 +185,7 @@ const meses = Object.entries(MAPPINGS.MES).map(([id, label]) => ({
             </summary>
 
             <div class="px-5 pb-5 animate-fadeIn">
-              <div class="h-[1px] w-full bg-white/5 mb-4"></div>
+              <div class="h-px w-full bg-white/5 mb-4"></div>
               <p class="text-[12px] text-white/50 leading-relaxed italic">
                 A diferencia de modelos estándar, este sistema está penalizado
                 estadísticamente para evitar
@@ -200,7 +200,7 @@ const meses = Object.entries(MAPPINGS.MES).map(([id, label]) => ({
       </div>
 
       <div
-        class="flex-[2] p-10 md:p-16 relative bg-gradient-to-br from-transparent to-ocean-900/20"
+        class="flex-2 p-10 md:p-16 relative bg-linear-to-br from-transparent to-ocean-900/20"
       >
         <div class="flex items-center justify-between mb-10">
           <div>
@@ -285,135 +285,142 @@ const meses = Object.entries(MAPPINGS.MES).map(([id, label]) => ({
       </div>
     </div>
   </div>
+</section>
 
-  <style>
-    /* Animación suave para el contenido */
-    .animate-fadeIn {
-      animation: fadeIn 0.4s ease-out forwards;
+<style>
+  /* Animación suave para el contenido */
+  .animate-fadeIn {
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-5px);
     }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(-5px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
+  }
 
-    /* Ocultar la flecha por defecto de Chrome/Safari */
-    details summary::-webkit-details-marker {
-      display: none;
+  /* Ocultar la flecha por defecto de Chrome/Safari */
+  details summary::-webkit-details-marker {
+    display: none;
+  }
+</style>
+
+<script>
+  // Usamos aserciones de tipo para que TS no se queje
+  const form = document.getElementById("form-predict") as HTMLFormElement;
+  const resContainer = document.getElementById(
+    "resultado-container"
+  ) as HTMLElement;
+  const resCat = document.getElementById("res-categoria") as HTMLElement;
+  const resProb = document.getElementById("res-prob") as HTMLElement;
+  const resBar = document.getElementById("res-bar") as HTMLElement;
+
+  const selectVia = document.getElementById(
+    "TIPO_VIA_NOMBRE"
+  ) as HTMLSelectElement;
+  const selectZona = document.getElementById(
+    "ZONA_AGRUPADA"
+  ) as HTMLSelectElement;
+  const selectHora = document.getElementById("HORA") as HTMLSelectElement;
+  const selectLuz = document.getElementById(
+    "CONDICION_ILUMINACION"
+  ) as HTMLSelectElement;
+
+  // --- LOGICA DE AUTOMATIZACIÓN ---
+  const viaToZona: Record<string, string> = {
+    "1": "1",
+    "2": "1",
+    "3": "1",
+    "4": "1",
+    "5": "1",
+    "6": "1",
+    "7": "1",
+    "8": "1",
+    "10": "1",
+    "14": "1",
+    "9": "2",
+    "11": "2",
+    "12": "2",
+    "13": "2",
+  };
+
+  selectVia?.addEventListener("change", () => {
+    const zonaSugerida = viaToZona[selectVia.value];
+    if (zonaSugerida && selectZona) {
+      selectZona.value = zonaSugerida;
     }
-  </style>
-  <script>
-    const form = document.getElementById("form-predict") as HTMLFormElement;
-    const resContainer = document.getElementById("resultado-container");
-    const resCat = document.getElementById("res-categoria");
-    const resProb = document.getElementById("res-prob");
-    const resBar = document.getElementById("res-bar");
+  });
 
-    // Selectores para automatización
-    const selectVia = document.getElementById(
-      "TIPO_VIA_NOMBRE"
-    ) as HTMLSelectElement;
-    const selectZona = document.getElementById(
-      "ZONA_AGRUPADA"
-    ) as HTMLSelectElement;
-    const selectHora = document.getElementById("HORA") as HTMLSelectElement;
-    const selectLuz = document.getElementById(
-      "CONDICION_ILUMINACION"
-    ) as HTMLSelectElement;
+  selectHora?.addEventListener("change", () => {
+    const hora = parseInt(selectHora.value);
+    if (selectLuz) {
+      if (hora >= 8 && hora <= 18) selectLuz.value = "1";
+      else if (hora >= 19 && hora <= 21) selectLuz.value = "3";
+      else selectLuz.value = "4";
+    }
+  });
 
-    // --- LOGICA DE AUTOMATIZACIÓN ---
+  // --- GESTIÓN DEL ENVÍO ---
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-    // 1. Relación Vía -> Zona
-    const viaToZona = {
-      "1": "1",
-      "2": "1",
-      "3": "1",
-      "4": "1",
-      "5": "1",
-      "6": "1",
-      "7": "1",
-      "8": "1",
-      "10": "1",
-      "14": "1", // Interurbanas
-      "9": "2",
-      "11": "2",
-      "12": "2",
-      "13": "2", // Urbanas
+    // Verificación de seguridad
+    if (!resContainer || !resCat || !resProb || !resBar) return;
+
+    // Reset de UI
+    resContainer.classList.remove("hidden");
+    resCat.innerText = "Procesando...";
+    resBar.style.width = "10%";
+
+    const formData = new FormData(form);
+    const dayMap = ["7", "1", "2", "3", "4", "5", "6"];
+    const diaActual = dayMap[new Date().getDay()];
+
+    const data = {
+      HORA: parseInt(formData.get("HORA") as string),
+      MES: parseInt(formData.get("MES") as string),
+      DIA_SEMANA: diaActual,
+      PROVINCIA: String(formData.get("PROVINCIA")),
+      TIPO_VIA_NOMBRE: String(formData.get("TIPO_VIA_NOMBRE")),
+      CONDICION_METEO: String(formData.get("CONDICION_METEO")),
+      CONDICION_ILUMINACION: String(formData.get("CONDICION_ILUMINACION")),
+      ZONA_AGRUPADA: String(formData.get("ZONA_AGRUPADA")),
     };
 
-    selectVia?.addEventListener("change", () => {
-      const zonaSugerida = viaToZona[selectVia.value];
-      if (zonaSugerida && selectZona) {
-        selectZona.value = zonaSugerida;
-      }
-    });
+    try {
+      // Usamos la URL de entorno o fallback manual si falla
+      const apiUrl =
+        import.meta.env.PUBLIC_API_URL;
 
-    // 2. Relación Hora -> Iluminación (Opcional pero muy útil)
-    selectHora?.addEventListener("change", () => {
-      const hora = parseInt(selectHora.value);
-      if (selectLuz) {
-        if (hora >= 8 && hora <= 18)
-          selectLuz.value = "1"; // Luz del día
-        else if (hora >= 19 && hora <= 21)
-          selectLuz.value = "3"; // Ocaso con luz art.
-        else selectLuz.value = "4"; // Noche con luz art. (asumimos ciudad/vía ilum)
-      }
-    });
+      const response = await fetch(`${apiUrl}/predict`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-    // --- GESTIÓN DEL ENVÍO (SUBMIT) ---
+      if (!response.ok) throw new Error("API Offline");
 
-    form?.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      if (!resContainer || !resCat || !resProb || !resBar) return;
+      const result = await response.json();
 
-      resContainer.classList.remove("hidden");
-      resCat.innerText = "Procesando...";
-      resBar.style.width = "10%";
-
-      const formData = new FormData(form);
-      const dayMap = ["7", "1", "2", "3", "4", "5", "6"];
-      const diaActual = dayMap[new Date().getDay()];
-
-      const data = {
-        HORA: parseInt(formData.get("HORA") as string),
-        MES: parseInt(formData.get("MES") as string),
-        DIA_SEMANA: diaActual,
-        PROVINCIA: formData.get("PROVINCIA"),
-        TIPO_VIA_NOMBRE: formData.get("TIPO_VIA_NOMBRE"),
-        CONDICION_METEO: formData.get("CONDICION_METEO"),
-        CONDICION_ILUMINACION: formData.get("CONDICION_ILUMINACION"),
-        ZONA_AGRUPADA: formData.get("ZONA_AGRUPADA"),
-      };
-
-      try {
-        const response = await fetch("http://127.0.0.1:8000/predict", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
-
-        if (!response.ok) throw new Error("Error en la respuesta de la API");
-
-        const result = await response.json();
-
-        setTimeout(() => {
-          resCat.innerText = result.categoria;
-          resCat.style.color = result.color;
-          resProb.innerText = `${result.probabilidad}%`;
-          resBar.style.backgroundColor = result.color;
-          resBar.style.width = `${result.probabilidad}%`;
-        }, 500);
-      } catch (error) {
-        console.error("API Error:", error);
-        resCat.innerText = "Error de Conexión";
-        resCat.style.color = "#ef4444";
-      }
-    });
-  </script>
-</section>
+      // Animación de carga
+      setTimeout(() => {
+        resCat.innerText = result.categoria || "Completado";
+        resCat.style.color = result.color || "#ffffff";
+        resProb.innerText = `${result.probabilidad}%`;
+        resBar.style.backgroundColor = result.color || "#3b82f6";
+        resBar.style.width = `${result.probabilidad}%`;
+      }, 500);
+    } catch (error) {
+      console.error("API Error:", error);
+      resCat.innerText = "Error de Conexión";
+      resCat.style.color = "#ef4444";
+      resProb.innerText = "---";
+      resBar.style.width = "0%";
+    }
+  });
+</script>

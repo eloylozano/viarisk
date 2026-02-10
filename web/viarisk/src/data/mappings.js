@@ -21,6 +21,26 @@ export const MAPPINGS = {
         1: "Autopista de peaje", 2: "Autopista libre", 3: "Autovía", 4: "Vía para automóviles",
         5: "Convencional con doble carril", 6: "Convencional único carril", 7: "Vía de servicio", 9: "Calle", 10: "Camino vecinal", 14: "Otro"
     },
+    TIPO_ACCIDENTE_NOMBRE: {
+        "1": "Frontal",
+        "2": "Fronto-lateral",
+        "3": "Lateral",
+        "4": "Por alcance",
+        "5": "Múltiple / En caravana",
+        "6": "Colisión contra obstáculo",
+        "7": "Atropello a personas",
+        "8": "Atropello a animales",
+        "9": "Vuelco en la vía",
+        "10": "Caída",
+        "11": "Solo salida de la vía",
+        "12": "Salida vía izq. con colisión",
+        "13": "Salida vía izq. con caída",
+        "14": "Salida vía izq. con vuelco",
+        "16": "Salida vía der. con colisión",
+        "17": "Salida vía der. con caída",
+        "18": "Salida vía der. con vuelco",
+        "20": "Otro tipo de accidente"
+    },
     CONDICION_METEO: {
         1: "Despejado", 2: "Nublado", 3: "Lluvia débil", 4: "Lluvia fuerte",
         5: "Granizando", 6: "Nevando", 999: "Otro"

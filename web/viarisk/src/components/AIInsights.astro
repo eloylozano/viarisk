@@ -1,19 +1,10 @@
 ---
 import { MAPPINGS } from "../data/mappings.js";
-
-// Importación de los nuevos JSON generados
 import probHoraAnual from "../data/prob_mortalidad_hora_anual.json";
 import statsTipologiaAnual from "../data/stats_tipologia_anual.json";
 import statsMeteoAnual from "../data/stats_meteo_anual.json";
 import statsProvinciasAnual from "../data/stats_provincias_anual.json";
 
-interface MappingStructure {
-  [key: string]: Record<string | number, string>;
-}
-
-const mappings = MAPPINGS as MappingStructure;
-
-// Pasamos los datos a strings para que el cliente (JS) pueda procesarlos
 const rawData = {
   hora: probHoraAnual,
   tipo: statsTipologiaAnual,
@@ -37,7 +28,7 @@ const rawData = {
   </div>
 
   <div
-    class="group bg-white/[0.02] border border-white/5 p-5 rounded-[1.5rem] space-y-3"
+    class="group bg-white/2 border border-white/5 p-5 rounded-3xl space-y-3"
   >
     <div class="flex justify-between items-end">
       <span class="text-white/30 text-[9px] font-black uppercase"
@@ -48,16 +39,14 @@ const rawData = {
     <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
       <div
         id="ins-hora-bar"
-        class="h-full bg-forest-500 shadow-[0_0_15px_#10b981] transition-all duration-1000"
+        class="h-full bg-forest-500 transition-all duration-1000"
         style="width: 0%"
       >
       </div>
     </div>
   </div>
 
-  <div
-    class="bg-purple-500/5 border border-purple-500/20 p-6 rounded-[2rem] hover:bg-purple-500/10 transition-all"
-  >
+  <div class="bg-purple-500/5 border border-purple-500/20 p-6 rounded-4xl">
     <span class="text-purple-400/50 text-[9px] font-black uppercase block mb-1"
       >Letalidad Máxima</span
     >
@@ -68,43 +57,13 @@ const rawData = {
       Cargando...
     </h4>
     <div
-      class="text-[10px] text-purple-400 font-mono bg-purple-400/10 w-fit px-2 py-1 rounded border border-purple-400/20"
+      class="text-[10px] text-purple-400 font-mono bg-purple-400/10 w-fit px-2 py-1 rounded"
     >
       RIESGO +<span id="ins-tipo-val">0</span>%
     </div>
   </div>
 
-  <div
-    class="bg-orange-500/5 border border-orange-500/20 p-6 rounded-[2rem] relative overflow-hidden group"
-  >
-    <div
-      class="absolute -right-2 -top-2 text-orange-500/10 group-hover:text-orange-500/20 group-hover:scale-110 transition-all duration-500"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="64"
-        height="64"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.5"
-        ><path
-          d="M12 2a10 10 0 0 0-10 10c0 4.99 3.03 8 10 8s10-3.01 10-8A10 10 0 0 0 12 2z"
-        ></path><path d="M2 12h20"></path></svg
-      >
-    </div>
-    <span class="text-orange-400/50 text-[9px] font-black uppercase block mb-1"
-      >Foco Motoristas</span
-    >
-    <h4 class="text-white text-sm font-bold uppercase mb-1">Salidas de Vía</h4>
-    <p class="text-[10px] text-orange-200/60 leading-relaxed">
-      Mayor incidencia detectada en <span class="text-orange-400 font-bold"
-        >curvas</span
-      > de carreteras convencionales.
-    </p>
-  </div>
-
-  <div class="bg-red-500/5 border border-red-500/20 p-6 rounded-[2rem]">
+  <div class="bg-red-500/5 border border-red-500/20 p-6 rounded-4xl">
     <div class="flex justify-between items-start mb-1">
       <span class="text-red-400/50 text-[9px] font-black uppercase"
         >Punto Caliente Geo</span
@@ -122,49 +81,24 @@ const rawData = {
     <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
       <div
         id="ins-prov-bar"
-        class="bg-red-500 h-full shadow-[0_0_10px_#ef4444] transition-all duration-1000"
+        class="bg-red-500 h-full transition-all duration-1000"
         style="width: 0%"
       >
       </div>
     </div>
   </div>
 
-  <div
-    class="relative overflow-hidden bg-sky-600 p-6 rounded-[2.5rem] group transition-all duration-500 shadow-xl shadow-sky-900/20"
-  >
-    <div
-      class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full scale-150 blur-2xl group-hover:bg-white/20 transition-all"
-    >
-    </div>
+  <div class="bg-sky-600 p-6 rounded-[2.5rem] relative overflow-hidden">
     <span class="text-sky-100/60 text-[9px] font-black uppercase block mb-1"
       >Factor Externo</span
     >
-    <div class="flex items-center gap-3 mb-3">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="text-white w-5 h-5"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2.5"
-        ><path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"></path><line
-          x1="8"
-          y1="16"
-          x2="8"
-          y2="21"></line><line x1="12" y1="18" x2="12" y2="23"></line><line
-          x1="16"
-          y1="16"
-          x2="16"
-          y2="21"></line></svg
-      >
-      <h4
-        class="text-white text-sm font-bold uppercase leading-tight"
-        id="ins-meteo-nombre"
-      >
-        Cargando...
-      </h4>
-    </div>
-    <p class="text-sky-100/80 text-[10px] leading-relaxed font-medium">
+    <h4
+      class="text-white text-sm font-bold uppercase mb-3"
+      id="ins-meteo-nombre"
+    >
+      Cargando...
+    </h4>
+    <p class="text-sky-100/80 text-[10px] leading-relaxed">
       Precaución: El riesgo aumenta bajo condiciones de <span
         class="text-white font-bold"
         id="ins-meteo-desc">...</span
@@ -176,72 +110,122 @@ const rawData = {
 <script>
   import { MAPPINGS } from "../data/mappings.js";
 
-  const container = document.getElementById("insights-container");
-  const raw = JSON.parse(container?.dataset.raw || "{}");
+  // Definimos una interfaz básica para los datos que vienen del JSON
+  // Esto quita los errores de "any" al acceder a .HORA, .ANIO, etc.
+  interface AccidenteRecord {
+    ANIO?: string | number;
+    HORA?: number;
+    Probabilidad_Mortal?: number;
+    Mortalidad_Media?: number;
+    Riesgo_Medio?: number;
+    ES_MORTAL?: number;
+    TIPO_ACCIDENTE_NOMBRE?: string | number;
+    PROVINCIA?: string | number;
+    CONDICION_METEO?: string | number;
+  }
 
-  const updateInsights = (year: string) => {
-    const filter = (arr: any[]) =>
-      year === "all" ? arr : arr.filter((d) => String(d.ANIO) === year);
+  function initInsights() {
+    const container = document.getElementById(
+      "insights-container"
+    ) as HTMLElement;
+    if (!container) return;
 
-    // 1. PROCESAR HORA
-    const horaData = filter(raw.hora);
-    const topHora = horaData.reduce(
-      (prev: any, curr: any) =>
-        prev.Probabilidad_Mortal > curr.Probabilidad_Mortal ? prev : curr,
-      { HORA: 0, Probabilidad_Mortal: 0 }
-    );
-    document.getElementById("ins-hora-val")!.textContent =
-      `${topHora.HORA}:00H`;
-    document.getElementById("ins-hora-bar")!.style.width =
-      `${topHora.Probabilidad_Mortal * 100}%`;
+    let raw: { [key: string]: AccidenteRecord[] };
+    try {
+      raw = JSON.parse(container.dataset.raw || "{}");
+    } catch (e) {
+      return;
+    }
 
-    // 2. PROCESAR TIPOLOGÍA
-    const tipoData = filter(raw.tipo);
-    const topTipo = tipoData.reduce(
-      (prev: any, curr: any) =>
-        prev.Mortalidad_Media > curr.Mortalidad_Media ? prev : curr,
-      { TIPO_ACCIDENTE_NOMBRE: 0, Mortalidad_Media: 0 }
-    );
-    document.getElementById("ins-tipo-nombre")!.textContent =
-      MAPPINGS.TIPO_ACCIDENTE_NOMBRE[topTipo.TIPO_ACCIDENTE_NOMBRE] ||
-      "Sin datos";
-    document.getElementById("ins-tipo-val")!.textContent = (
-      topTipo.Mortalidad_Media * 100
-    ).toFixed(0);
+    const updateInsights = (year: string) => {
+      const filter = (arr: AccidenteRecord[] | undefined) => {
+        if (!arr || !Array.isArray(arr)) return [];
+        return year === "all"
+          ? arr
+          : arr.filter((d) => String(d.ANIO) === String(year));
+      };
 
-    // 3. PROCESAR PROVINCIA
-    const provData = filter(raw.prov);
-    const topProv = provData.reduce(
-      (prev: any, curr: any) =>
-        prev.Riesgo_Medio > curr.Riesgo_Medio ? prev : curr,
-      { PROVINCIA: 0, Riesgo_Medio: 0 }
-    );
-    document.getElementById("ins-prov-nombre")!.textContent =
-      MAPPINGS.PROVINCIA[topProv.PROVINCIA] || "N/A";
-    document.getElementById("ins-prov-val")!.textContent = (
-      topProv.Riesgo_Medio * 100
-    ).toFixed(1);
-    document.getElementById("ins-prov-bar")!.style.width =
-      `${topProv.Riesgo_Medio * 100}%`;
+      const setUI = (id: string, val: string | number) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = String(val);
+      };
 
-    // 4. PROCESAR METEO
-    const meteoData = filter(raw.meteo);
-    const topMeteo = meteoData.reduce(
-      (prev: any, curr: any) => (prev.ES_MORTAL > curr.ES_MORTAL ? prev : curr),
-      { CONDICION_METEO: 0, ES_MORTAL: 0 }
-    );
-    const nombreMeteo =
-      MAPPINGS.CONDICION_METEO[topMeteo.CONDICION_METEO] || "Despejado";
-    document.getElementById("ins-meteo-nombre")!.textContent = nombreMeteo;
-    document.getElementById("ins-meteo-desc")!.textContent =
-      nombreMeteo.toLowerCase();
-  };
+      const setW = (id: string, p: number) => {
+        const el = document.getElementById(id);
+        if (el) (el as HTMLElement).style.width = Math.min(p, 100) + "%";
+      };
 
-  // Escuchar el evento global de filtrado
-  window.addEventListener("filterCharts", (e: any) =>
-    updateInsights(e.detail.year)
-  );
+      // 1. HORA
+      const hData = filter(raw.hora);
+      if (hData.length) {
+        const top = hData.reduce((p, c) =>
+          Number(p.Probabilidad_Mortal || 0) >
+          Number(c.Probabilidad_Mortal || 0)
+            ? p
+            : c
+        );
+        setUI("ins-hora-val", `${top.HORA}:00H`);
+        setW("ins-hora-bar", Number(top.Probabilidad_Mortal || 0) * 100);
+      }
 
-  // Carga inicial
-  updateInsights("all");
+      // 2. TIPOLOGÍA
+      const tData = filter(raw.tipo);
+      if (tData.length) {
+        const top = tData.reduce((p, c) =>
+          Number(p.Mortalidad_Media || 0) > Number(c.Mortalidad_Media || 0)
+            ? p
+            : c
+        );
+        const idKey = String(top.TIPO_ACCIDENTE_NOMBRE || "");
+        // @ts-ignore - Ignoramos si TypeScript no conoce todas las llaves de MAPPINGS
+        const nombre =
+          MAPPINGS?.TIPO_ACCIDENTE_NOMBRE?.[idKey] || `Tipo ${idKey}`;
+        setUI("ins-tipo-nombre", nombre);
+        setUI(
+          "ins-tipo-val",
+          (Number(top.Mortalidad_Media || 0) * 100).toFixed(0)
+        );
+      }
+
+      // 3. PROVINCIA
+      const pData = filter(raw.prov);
+      if (pData.length) {
+        const top = pData.reduce((p, c) =>
+          Number(p.Riesgo_Medio || 0) > Number(c.Riesgo_Medio || 0) ? p : c
+        );
+        const idKey = String(top.PROVINCIA || "");
+        // @ts-ignore
+        const nombre = MAPPINGS?.PROVINCIA?.[idKey] || `Prov. ${idKey}`;
+        setUI("ins-prov-nombre", nombre);
+        setUI("ins-prov-val", (Number(top.Riesgo_Medio || 0) * 100).toFixed(1));
+        setW("ins-prov-bar", Number(top.Riesgo_Medio || 0) * 100);
+      }
+
+      // 4. METEO
+      const mData = filter(raw.meteo);
+      if (mData.length) {
+        const top = mData.reduce((p, c) =>
+          Number(p.ES_MORTAL || 0) > Number(c.ES_MORTAL || 0) ? p : c
+        );
+        const idKey = String(top.CONDICION_METEO || "");
+        // @ts-ignore
+        const nom = MAPPINGS?.CONDICION_METEO?.[idKey] || "Despejado";
+        setUI("ins-meteo-nombre", nom);
+        setUI(
+          "ins-meteo-desc",
+          typeof nom === "string" ? nom.toLowerCase() : "condiciones adversas"
+        );
+      }
+    };
+
+    // Escuchador de eventos con tipado para el CustomEvent
+    window.addEventListener("filterCharts", ((e: CustomEvent) => {
+      updateInsights(e.detail.year);
+    }) as EventListener);
+
+    updateInsights("all");
+  }
+
+  initInsights();
+  document.addEventListener("astro:after-swap", initInsights);
 </script>
