@@ -1,5 +1,5 @@
 ---
-// ChartCard.astro corregido para donuts más pequeños
+// ChartCard.astro corregido y con tipado estricto
 interface Props {
   id: string;
   title: string;
@@ -48,6 +48,12 @@ const {
   type MappingType = Record<string, Record<string | number, string>>;
   const typedMappings = MAPPINGS as MappingType;
 
+  // Interfaz para el acumulador de datos
+  interface GroupData {
+    val: number;
+    count: number;
+  }
+
   const setupChart = () => {
     const canvases =
       document.querySelectorAll<HTMLCanvasElement>("canvas[data-chart]");
@@ -87,14 +93,12 @@ const {
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          // --- AQUÍ ESTÁ EL TRUCO PARA EL DONUT ---
           cutout: chartType === "doughnut" ? "75%" : undefined,
           radius: chartType === "doughnut" ? "85%" : undefined,
-          // ----------------------------------------
           plugins: {
             legend: {
               display: chartType === "doughnut",
-              position: "bottom", // Leyenda abajo para dejar espacio al círculo
+              position: "bottom",
               labels: {
                 color: "#9ca3af",
                 font: { size: 10 },
@@ -111,10 +115,7 @@ const {
           },
           scales:
             chartType === "doughnut"
-              ? {
-                  x: { display: false },
-                  y: { display: false },
-                }
+              ? { x: { display: false }, y: { display: false } }
               : {
                   y: {
                     grid: { color: "rgba(255,255,255,0.05)" },
@@ -128,13 +129,12 @@ const {
         },
       });
 
-      // Lógica de updateChartData idéntica a la anterior...
       const updateChartData = (selectedYear: string) => {
-
-        
         let processedData: Record<string, any>[] = [];
+
         if (selectedYear === "all") {
-          const groups: Record<string, { val: number; count: number }> = {};
+          const groups: Record<string, GroupData> = {};
+
           originalData.forEach((item: any) => {
             const k = item[xKey];
             const v = item[yKey];
@@ -142,63 +142,71 @@ const {
             groups[k].val += v;
             groups[k].count += 1;
           });
-          processedData = Object.keys(groups).map((k) => ({
-            [xKey]: k,
-            [yKey]: groups[k].val / groups[k].count,
-          }));
+
+          processedData = Object.keys(groups).map((k) => {
+            // Definimos qué columnas son proporciones/tasas y cuáles son conteos puros
+            const keyLower = yKey.toLowerCase();
+            const isRate =
+              keyLower.includes("riesgo") ||
+              keyLower.includes("prob") ||
+              keyLower.includes("es_mortal"); // <--- Añadido ES_MORTAL
+
+            return {
+              [xKey]: k,
+              [yKey]: isRate ? groups[k].val / groups[k].count : groups[k].val,
+            };
+          });
         } else {
           processedData = originalData.filter(
             (d: any) => String(d.ANIO || d.ANYO) === String(selectedYear)
           );
         }
 
-        if (
-          chartId.includes("ilumin") ||
-          chartId.includes("firme") ||
-          chartId.includes("prov") ||
-          chartId.includes("tipo")
-        ) {
-          processedData.sort((a, b) => b[yKey] - a[yKey]);
+        // --- Lógica de Ordenación Unificada ---
+        const shouldSortDesc = ["ilumin", "firme", "prov", "tipo"].some((key) =>
+          chartId.includes(key)
+        );
 
-          // Si quieres limitar a un Top 10 para que no sea infinito:
-          if (chartId.includes("prov")) {
+        if (shouldSortDesc) {
+          processedData.sort((a, b) => b[yKey] - a[yKey]);
+          if (chartId.includes("prov"))
             processedData = processedData.slice(0, 10);
-          }
         } else {
-          // Ordenación normal para el resto (Horas, años, etc)
           processedData.sort((a, b) => {
             const vA = a[xKey];
             const vB = b[xKey];
-            return !isNaN(vA) && !isNaN(vB)
+            return !isNaN(Number(vA)) && !isNaN(Number(vB))
               ? Number(vA) - Number(vB)
               : String(vA).localeCompare(String(vB));
           });
         }
-        if (chartId.includes("prov") || chartId.includes("tipo")) {
-          processedData.sort((a, b) => b[yKey] - a[yKey]);
-          processedData = processedData.slice(0, 10);
-        }
 
+        // Asignar Labels con Mappings
         chartInstance.data.labels = processedData.map((d) => {
           const val = d[xKey];
           return typedMappings[xKey] && typedMappings[xKey][val]
             ? typedMappings[xKey][val]
             : val;
         });
+
         chartInstance.data.datasets[0].data = processedData.map((d) => d[yKey]);
         chartInstance.update();
       };
 
+      // Inicialización y Eventos
       updateChartData("all");
+
       const handleFilter = (e: any) => updateChartData(e.detail.year);
       window.addEventListener("filterCharts", handleFilter as EventListener);
+
       document.addEventListener(
         "astro:before-swap",
-        () =>
+        () => {
           window.removeEventListener(
             "filterCharts",
             handleFilter as EventListener
-          ),
+          );
+        },
         { once: true }
       );
     });

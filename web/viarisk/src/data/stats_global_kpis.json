@@ -1,1 +1,32 @@
-[{"ANIO":2020,"total_muertos_moto":308,"total_muertos_coche":486,"total_accidentes":72959},{"ANIO":2021,"total_muertos_moto":351,"total_muertos_coche":539,"total_accidentes":89862},{"ANIO":2022,"total_muertos_moto":379,"total_muertos_coche":612,"total_accidentes":97916},{"ANIO":2023,"total_muertos_moto":430,"total_muertos_coche":615,"total_accidentes":101306},{"ANIO":2024,"total_muertos_moto":423,"total_muertos_coche":618,"total_accidentes":101996}]
+[
+  {
+    "ANIO": 2020,
+    "total_muertos_moto": 308,
+    "total_muertos_coche": 486,
+    "total_accidentes": 72959
+  },
+  {
+    "ANIO": 2021,
+    "total_muertos_moto": 351,
+    "total_muertos_coche": 539,
+    "total_accidentes": 89862
+  },
+  {
+    "ANIO": 2022,
+    "total_muertos_moto": 379,
+    "total_muertos_coche": 612,
+    "total_accidentes": 97916
+  },
+  {
+    "ANIO": 2023,
+    "total_muertos_moto": 430,
+    "total_muertos_coche": 615,
+    "total_accidentes": 101306
+  },
+  {
+    "ANIO": 2024,
+    "total_muertos_moto": 423,
+    "total_muertos_coche": 618,
+    "total_accidentes": 101996
+  }
+]

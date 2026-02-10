@@ -1,7 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
 @import "tailwindcss";
 
 /* 1. Importación de Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
 
 @theme {
     /* 2. Definición de la Paleta de Colores (Bosque y Océano) */
@@ -29,9 +29,17 @@
 
 /* 4. Estilos Base */
 @layer base {
+
+    html,
     body {
+        /* Evita el scroll horizontal en seco */
+        max-width: 100vw;
+        overflow-x: hidden;
         margin: 0;
         padding: 0;
+    }
+
+    body {
         /* Fondo base oscuro */
         background-color: var(--color-ocean-950);
 
