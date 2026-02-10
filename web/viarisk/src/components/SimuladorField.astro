@@ -1,0 +1,56 @@
+---
+// src/components/SimuladorField.astro
+interface Props {
+  id: string;
+  label: string;
+  options:
+    | { id?: string | number; label?: string; value?: string }[]
+    | string[];
+  number: string;
+  fullWidth?: boolean;
+}
+
+const { id, label, options, number, fullWidth = false } = Astro.props;
+---
+
+<div class={`flex flex-col gap-3 group ${fullWidth ? "md:col-span-2" : ""}`}>
+  <label
+    for={id}
+    class="text-[10px] font-black uppercase tracking-widest text-forest-500/80 group-focus-within:text-forest-400 transition-colors"
+  >
+    {number}. {label}
+  </label>
+  <div class="relative">
+    <select
+      id={id}
+      name={id}
+      required
+      class="appearance-none w-full bg-black/40 border border-white/10 text-white rounded-xl px-4 py-4 text-sm focus:border-forest-500/50 focus:ring-4 focus:ring-forest-500/10 outline-none transition-all cursor-pointer"
+    >
+      {
+        options.map((opt) => {
+          const val = typeof opt === "string" ? opt : opt.id || opt.value;
+          const text = typeof opt === "string" ? opt : opt.label || opt.value;
+          return <option value={val}>{text}</option>;
+        })
+      }
+    </select>
+    <div
+      class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-forest-500"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-4 w-4"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="3"
+          d="M19 9l-7 7-7-7"></path>
+      </svg>
+    </div>
+  </div>
+</div>

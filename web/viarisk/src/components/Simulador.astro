@@ -1,4 +1,7 @@
 ---
+import SimuladorField from "./SimuladorField.astro";
+import SimuladorResult from "./SimuladorResult.astro";
+
 // src/components/Simulador.astro
 const provincias = [
   "MADRID",
@@ -77,224 +80,48 @@ const trazados = [
 
       <form id="form-predict" class="p-6 md:p-10 space-y-8">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-          <div class="flex flex-col gap-3 group">
-            <label
-              class="text-[10px] font-black uppercase tracking-widest text-forest-500/80 group-focus-within:text-forest-400 transition-colors"
-              >01. Localización Geográfica</label
-            >
-            <div class="relative">
-              <select
-                id="PROVINCIA"
-                required
-                class="appearance-none w-full bg-black/40 border border-white/10 text-white rounded-xl px-4 py-4 text-sm focus:border-forest-500/50 focus:ring-4 focus:ring-forest-500/10 outline-none transition-all cursor-pointer"
-              >
-                {provincias.map((p) => <option value={p}>{p}</option>)}
-              </select>
-              <div
-                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-forest-500"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  ><path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="3"
-                    d="M19 9l-7 7-7-7"></path></svg
-                >
-              </div>
-            </div>
-          </div>
-
-          <div class="flex flex-col gap-3 group">
-            <label
-              class="text-[10px] font-black uppercase tracking-widest text-forest-500/80 group-focus-within:text-forest-400 transition-colors"
-              >02. Infraestructura</label
-            >
-            <div class="relative">
-              <select
-                id="TIPO_VIA_NOMBRE"
-                required
-                class="appearance-none w-full bg-black/40 border border-white/10 text-white rounded-xl px-4 py-4 text-sm focus:border-forest-500/50 focus:ring-4 focus:ring-forest-500/10 outline-none transition-all cursor-pointer"
-              >
-                {vias.map((v) => <option value={v.id}>{v.label}</option>)}
-              </select>
-              <div
-                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-forest-500"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  ><path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="3"
-                    d="M19 9l-7 7-7-7"></path></svg
-                >
-              </div>
-            </div>
-          </div>
-
-          <div class="flex flex-col gap-3 group">
-            <label
-              class="text-[10px] font-black uppercase tracking-widest text-forest-500/80 group-focus-within:text-forest-400 transition-colors"
-              >03. Climatología</label
-            >
-            <div class="relative">
-              <select
-                id="CONDICION_METEO"
-                required
-                class="appearance-none w-full bg-black/40 border border-white/10 text-white rounded-xl px-4 py-4 text-sm focus:border-forest-500/50 focus:ring-4 focus:ring-forest-500/10 outline-none transition-all cursor-pointer"
-              >
-                {climas.map((c) => <option value={c.id}>{c.label}</option>)}
-              </select>
-              <div
-                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-forest-500"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  ><path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="3"
-                    d="M19 9l-7 7-7-7"></path></svg
-                >
-              </div>
-            </div>
-          </div>
-
-          <div class="flex flex-col gap-3 group">
-            <label
-              class="text-[10px] font-black uppercase tracking-widest text-forest-500/80 group-focus-within:text-forest-400 transition-colors"
-              >04. Estado del Suelo</label
-            >
-            <div class="relative">
-              <select
-                id="CONDICION_FIRME"
-                required
-                class="appearance-none w-full bg-black/40 border border-white/10 text-white rounded-xl px-4 py-4 text-sm focus:border-forest-500/50 focus:ring-4 focus:ring-forest-500/10 outline-none transition-all cursor-pointer"
-              >
-                {firmes.map((f) => <option value={f.id}>{f.label}</option>)}
-              </select>
-              <div
-                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-forest-500"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  ><path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="3"
-                    d="M19 9l-7 7-7-7"></path></svg
-                >
-              </div>
-            </div>
-          </div>
-
-          <div class="flex flex-col gap-3 group md:col-span-2">
-            <label
-              class="text-[10px] font-black uppercase tracking-widest text-forest-500/80 group-focus-within:text-forest-400 transition-colors"
-              >05. Geometría del Trazado</label
-            >
-            <div class="relative">
-              <select
-                id="TRAZADO_PLANTA"
-                required
-                class="appearance-none w-full bg-black/40 border border-white/10 text-white rounded-xl px-4 py-4 text-sm focus:border-forest-500/50 focus:ring-4 focus:ring-forest-500/10 outline-none transition-all cursor-pointer"
-              >
-                {trazados.map((t) => <option value={t.id}>{t.label}</option>)}
-              </select>
-              <div
-                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-forest-500"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  ><path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="3"
-                    d="M19 9l-7 7-7-7"></path></svg
-                >
-              </div>
-            </div>
-          </div>
+          <SimuladorField
+            id="PROVINCIA"
+            label="Localización"
+            options={provincias}
+            number="01"
+          />
+          <SimuladorField
+            id="TIPO_VIA_NOMBRE"
+            label="Infraestructura"
+            options={vias}
+            number="02"
+          />
+          <SimuladorField
+            id="CONDICION_METEO"
+            label="Climatología"
+            options={climas}
+            number="03"
+          />
+          <SimuladorField
+            id="CONDICION_FIRME"
+            label="Estado del Suelo"
+            options={firmes}
+            number="04"
+          />
+          <SimuladorField
+            id="TRAZADO_PLANTA"
+            label="Geometría"
+            options={trazados}
+            number="05"
+            fullWidth={true}
+          />
         </div>
 
         <button
           type="submit"
-          class="w-full cursor-pointer relative group overflow-hidden bg-forest-500 hover:bg-forest-400 text-white font-black py-5 rounded-2xl transition-all shadow-[0_20px_40px_-15px_rgba(16,185,129,0.3)] active:scale-[0.97] uppercase tracking-[0.3em] text-[10px]"
+          class="w-full cursor-pointer relative group overflow-hidden bg-forest-500 hover:bg-forest-400 text-white font-black py-5 rounded-2xl transition-all uppercase tracking-[0.3em] text-[10px]"
         >
           <span class="relative z-10">Ejecutar Análisis Predictivo</span>
-          <div
-            class="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shine_1.5s_infinite]"
-          >
-          </div>
         </button>
       </form>
 
-      <div
-        id="resultado-container"
-        class="hidden p-6 md:p-10 bg-black/40 border-t border-white/10 animate-in fade-in zoom-in duration-500"
-      >
-        <div
-          id="card-resultado"
-          class="relative overflow-hidden border border-white/10 p-8 rounded-3xl bg-linear-to-br from-white/5 to-transparent"
-        >
-          <div
-            class="flex flex-col md:flex-row items-center justify-between gap-6"
-          >
-            <div class="text-center md:text-left">
-              <p
-                class="text-white/30 text-[10px] uppercase font-mono tracking-widest mb-1"
-              >
-                Resultado del Procesamiento
-              </p>
-              <h4
-                id="res-categoria"
-                class="text-5xl font-black uppercase tracking-tighter leading-none"
-              >
-                ---
-              </h4>
-            </div>
-            <div class="flex flex-col items-center md:items-end">
-              <div class="text-[10px] text-white/30 font-mono uppercase mb-1">
-                Nivel de Probabilidad
-              </div>
-              <div
-                id="res-prob"
-                class="text-4xl font-mono font-bold text-white leading-none"
-              >
-                0.00%
-              </div>
-            </div>
-          </div>
-          <div class="mt-6 w-full h-1 bg-white/5 rounded-full overflow-hidden">
-            <div
-              id="res-bar"
-              class="h-full w-0 transition-all duration-1000 ease-out bg-forest-500"
-            >
-            </div>
-          </div>
-        </div>
-      </div>
+      <SimuladorResult />
     </div>
   </div>
 </section>
@@ -310,42 +137,31 @@ const trazados = [
     color: white;
   }
 </style>
-
 <script>
-  // Tu lógica de script se mantiene igual, solo añadimos la animación de la barra de resultado
-  const form = document.getElementById("form-predict");
+  const form = document.getElementById("form-predict") as HTMLFormElement;
   const resContainer = document.getElementById("resultado-container");
   const resCat = document.getElementById("res-categoria");
   const resProb = document.getElementById("res-prob");
   const resBar = document.getElementById("res-bar");
 
-  form.addEventListener("submit", async (e) => {
+  form?.addEventListener("submit", async (e) => {
     e.preventDefault();
+    if (!resContainer || !resCat || !resProb || !resBar) return;
 
-    // Simulación de carga visual antes del fetch
     resContainer.classList.remove("hidden");
     resCat.innerText = "Calculando...";
-    resProb.innerText = "---%";
     resBar.style.width = "0%";
 
+    const formData = new FormData(form);
     const data = {
       HORA: new Date().getHours(),
       MES: new Date().getMonth() + 1,
       DIA_SEMANA: new Date().getDay() || 7,
-      PROVINCIA: (document.getElementById("PROVINCIA") as HTMLSelectElement)
-        .value,
-      TIPO_VIA_NOMBRE: (
-        document.getElementById("TIPO_VIA_NOMBRE") as HTMLSelectElement
-      ).value,
-      CONDICION_METEO: (
-        document.getElementById("CONDICION_METEO") as HTMLSelectElement
-      ).value,
-      CONDICION_FIRME: (
-        document.getElementById("CONDICION_FIRME") as HTMLSelectElement
-      ).value,
-      TRAZADO_PLANTA: (
-        document.getElementById("TRAZADO_PLANTA") as HTMLSelectElement
-      ).value,
+      PROVINCIA: formData.get("PROVINCIA"),
+      TIPO_VIA_NOMBRE: formData.get("TIPO_VIA_NOMBRE"),
+      CONDICION_METEO: formData.get("CONDICION_METEO"),
+      CONDICION_FIRME: formData.get("CONDICION_FIRME"),
+      TRAZADO_PLANTA: formData.get("TRAZADO_PLANTA"),
     };
 
     try {
@@ -357,18 +173,16 @@ const trazados = [
 
       const result = await response.json();
 
-      // Aplicar resultados con delay para efecto "computacional"
       setTimeout(() => {
         resCat.innerText = result.categoria;
         resCat.style.color = result.color;
         resProb.innerText = `${result.probabilidad}%`;
         resBar.style.backgroundColor = result.color;
         resBar.style.width = `${result.probabilidad}%`;
-        resContainer.scrollIntoView({ behavior: "smooth", block: "center" });
       }, 600);
     } catch (error) {
-      alert("Error: Servidor AI no responde.");
       resContainer.classList.add("hidden");
+      alert("Error: Servidor AI no responde.");
     }
   });
 </script>

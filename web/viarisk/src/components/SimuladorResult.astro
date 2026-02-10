@@ -1,0 +1,20 @@
+---
+// src/components/SimuladorResult.astro
+---
+<div id="resultado-container" class="hidden p-6 md:p-10 bg-black/40 border-t border-white/10 animate-in fade-in zoom-in duration-500">
+    <div id="card-resultado" class="relative overflow-hidden border border-white/10 p-8 rounded-3xl bg-linear-to-br from-white/5 to-transparent">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="text-center md:text-left">
+          <p class="text-white/30 text-[10px] uppercase font-mono tracking-widest mb-1">Resultado del Procesamiento</p>
+          <h4 id="res-categoria" class="text-5xl font-black uppercase tracking-tighter leading-none">---</h4>
+        </div>
+        <div class="flex flex-col items-center md:items-end">
+          <div class="text-[10px] text-white/30 font-mono uppercase mb-1">Nivel de Probabilidad</div>
+          <div id="res-prob" class="text-4xl font-mono font-bold text-white leading-none">0.00%</div>
+        </div>
+      </div>
+      <div class="mt-6 w-full h-1 bg-white/5 rounded-full overflow-hidden">
+        <div id="res-bar" class="h-full w-0 transition-all duration-1000 ease-out bg-forest-500"></div>
+      </div>
+    </div>
+  </div>
