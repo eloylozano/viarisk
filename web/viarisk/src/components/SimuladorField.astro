@@ -3,44 +3,60 @@
 interface Props {
   id: string;
   label: string;
-  options:
-    | { id?: string | number; label?: string; value?: string }[]
-    | string[];
+  options: { id?: string | number; label?: string; value?: string }[] | string[];
   number: string;
   fullWidth?: boolean;
 }
 
 const { id, label, options, number, fullWidth = false } = Astro.props;
+
+// LÓGICA DE ORDENACIÓN: 
+let finalOptions = [...options];
+
+if (id === "PROVINCIA") {
+  finalOptions.sort((a, b) => {
+    const labelA = typeof a === "string" ? a : a.label || "";
+    const labelB = typeof b === "string" ? b : b.label || "";
+    // localeCompare con 'es' maneja correctamente tildes y la Ñ
+    return labelA.localeCompare(labelB, 'es', { sensitivity: 'base' });
+  });
+}
 ---
 
 <div class={`flex flex-col gap-3 group ${fullWidth ? "md:col-span-2" : ""}`}>
   <label
     for={id}
-    class="text-[10px] font-black uppercase tracking-widest text-forest-500/80 group-focus-within:text-forest-400 transition-colors"
+    class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/70 group-focus-within:text-forest-400 transition-colors ml-1"
   >
-    {number}. {label}
+    <span class="opacity-40">{number}.</span> {label}
   </label>
-  <div class="relative">
+  
+  <div class="relative group/select">
     <select
       id={id}
       name={id}
       required
-      class="appearance-none w-full bg-black/40 border border-white/10 text-white rounded-xl px-4 py-4 text-sm focus:border-forest-500/50 focus:ring-4 focus:ring-forest-500/10 outline-none transition-all cursor-pointer"
+      class="appearance-none w-full bg-black/60 border border-white/5 text-white/80 rounded-2xl px-5 py-4 text-sm 
+             focus:border-forest-500/40 focus:ring-8 focus:ring-forest-500/5 focus:text-white
+             outline-none transition-all duration-300 cursor-pointer backdrop-blur-md"
     >
       {
-        options.map((opt) => {
+        finalOptions.map((opt) => {
           const val = typeof opt === "string" ? opt : opt.id || opt.value;
           const text = typeof opt === "string" ? opt : opt.label || opt.value;
-          return <option value={val}>{text}</option>;
+          // Dejamos Madrid preseleccionado por ser el volumen más alto
+          const isSelected = val === "28"; 
+          return <option value={val} selected={isSelected} class="bg-ocean-950 text-white py-4">{text}</option>;
         })
       }
     </select>
+    
     <div
-      class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-forest-500"
+      class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-5 text-forest-500/50 group-focus-within/select:text-forest-400 transition-colors"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="h-4 w-4"
+        class="h-4 w-4 transform group-focus-within/select:rotate-180 transition-transform duration-300"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -48,9 +64,33 @@ const { id, label, options, number, fullWidth = false } = Astro.props;
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
-          stroke-width="3"
+          stroke-width="2.5"
           d="M19 9l-7 7-7-7"></path>
       </svg>
     </div>
+    
+    <div class="absolute -bottom-px left-5 right-5 h-px bg-gradient-to-r from-transparent via-forest-500/40 to-transparent opacity-0 group-focus-within/select:opacity-100 transition-opacity"></div>
   </div>
 </div>
+
+<style>
+  /* Personalización del scrollbar del dropdown */
+  select {
+    scrollbar-width: thin;
+    scrollbar-color: #10b981 #020617;
+  }
+
+  /* Estilo de las opciones */
+  select option {
+    background-color: #020617;
+    color: #94a3b8;
+    padding: 12px;
+  }
+
+  /* Intento de hack para colores de selección en navegadores basados en Chromium */
+  select option:checked,
+  select option:hover {
+    box-shadow: 0 0 10px 100px #10b981 inset;
+    color: white;
+  }
+</style>

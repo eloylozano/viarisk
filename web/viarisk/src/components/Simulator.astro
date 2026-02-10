@@ -1,341 +1,419 @@
 ---
 import SimuladorField from "./SimuladorField.astro";
 import SimuladorResult from "./SimuladorResult.astro";
+import { MAPPINGS } from "../data/mappings.js"; // Asegúrate de que la ruta sea correcta
+import HolographicButton from "./HolographicButton.astro";
 
-// 1. PROVINCIAS (Convertidas a objetos para el Select)
-const provincias = [
-  "ALAVA", "ALBACETE", "ALICANTE", "ALMERIA", "AVILA", "BADAJOZ", "BALEARES", 
-  "BARCELONA", "BURGOS", "CACERES", "CADIZ", "CASTELLON", "CIUDAD REAL", 
-  "CORDOBA", "A CORUÑA", "CUENCA", "GIRONA", "GRANADA", "GUADALAJARA", 
-  "GUIPUZCOA", "HUELVA", "HUESCA", "JAEN", "LEON", "LLEIDA", "LA RIOJA", 
-  "LUGO", "MADRID", "MALAGA", "MURCIA", "NAVARRA", "OURENSE", "ASTURIAS", 
-  "PALENCIA", "LAS PALMAS", "PONTEVEDRA", "SALAMANCA", "SANTA CRUZ DE TENERIFE", 
-  "CANTABRIA", "SEGOVIA", "SEVILLA", "SORIA", "TARRAGONA", "TERUEL", "TOLEDO", 
-  "VALENCIA", "VALLADOLID", "VIZCAYA", "ZAMORA", "ZARAGOZA"
-].map(p => ({ id: p, label: p }));
-
-// 2. VÍAS (Sincronizadas con VIA_PELIGROSA)
-const vias = [
-  { id: "AUTOPISTA", label: "Autopista" },
-  { id: "AUTOVIA", label: "Autovía" },
-  { id: "CARRETERA CONVENCIONAL", label: "Carretera Convencional" },
-  { id: "VIA URBANA", label: "Vía Urbana" },
-  { id: "OTROS TIPOS", label: "Otros Tipos" },
-];
-
-// 3. CLIMAS (Sincronizados con CONDICION_PELIGROSA)
-const climas = [
-  { id: "DESPEJADO", label: "Despejado" },
-  { id: "LLUVIA", label: "Lluvia" },
-  { id: "NIEBLA", label: "Niebla" },
-  { id: "NIEVE", label: "Nieve" },
-  { id: "GRANIZO", label: "Granizo" },
-  { id: "VIENTO", label: "Viento Fuerte" },
-  { id: "OTROS", label: "Otros" },
-  { id: "DESCONOCIDO", label: "Desconocido" },
-];
-
-// 4. ILUMINACIÓN (Sincronizada con ILUMINACION_DEFICIENTE)
-const iluminacion = [
-  { id: "PLENO DÍA", label: "Pleno día" },
-  { id: "CREPÚSCULO", label: "Crepúsculo / Alba" },
-  { id: "NOCTURNA CON ALUMBRADO", label: "Noche con iluminación" },
-  { id: "NOCTURNA SIN ALUMBRADO", label: "Noche sin iluminación" },
-  { id: "DESCONOCIDO", label: "Desconocido" },
-];
-
-// 5. TIPOS DE ACCIDENTE
-const tiposAccidente = [
-  { id: "ALCANCE", label: "Alcance" },
-  { id: "CHOQUE FRONTAL", label: "Choque Frontal" },
-  { id: "CHOQUE LATERAL", label: "Choque Lateral" },
-  { id: "COLISION MULTIPLE", label: "Colisión Múltiple" },
-  { id: "SALIDA DE VIA", label: "Salida de Vía" },
-  { id: "ATROPELLO", label: "Atropello" },
-  { id: "VUELCO", label: "Vuelco" },
-  { id: "OTRO", label: "Otro" },
-];
-
-// 6. DATOS TEMPORALES (Nuevos: Necesarios para el modelo v2.0)
-const meses = [
-  { id: "1", label: "Enero" }, { id: "2", label: "Febrero" }, { id: "3", label: "Marzo" },
-  { id: "4", label: "Abril" }, { id: "5", label: "Mayo" }, { id: "6", label: "Junio" },
-  { id: "7", label: "Julio" }, { id: "8", label: "Agosto" }, { id: "9", label: "Septiembre" },
-  { id: "10", label: "Octubre" }, { id: "11", label: "Noviembre" }, { id: "12", label: "Diciembre" }
-];
-
-const diasSemana = [
-  { id: "LUNES", label: "Lunes" }, { id: "MARTES", label: "Martes" },
-  { id: "MIERCOLES", label: "Miércoles" }, { id: "JUEVES", label: "Jueves" },
-  { id: "VIERNES", label: "Viernes" }, { id: "SABADO", label: "Sábado" },
-  { id: "DOMINGO", label: "Domingo" }
-];
-
-const horas = Array.from({ length: 24 }, (_, i) => ({ 
-  id: i.toString(), 
-  label: `${i.toString().padStart(2, '0')}:00h` 
+// Transformamos los objetos de mappings.js en arrays para los selectores
+const provincias = Object.entries(MAPPINGS.PROVINCIA).map(([id, label]) => ({
+  id,
+  label,
+}));
+const vias = Object.entries(MAPPINGS.TIPO_VIA_NOMBRE).map(([id, label]) => ({
+  id,
+  label,
+}));
+const climas = Object.entries(MAPPINGS.CONDICION_METEO).map(([id, label]) => ({
+  id,
+  label,
+}));
+const luces = Object.entries(MAPPINGS.CONDICION_ILUMINACION).map(
+  ([id, label]) => ({ id, label })
+);
+const zonas = Object.entries(MAPPINGS.ZONA_AGRUPADA).map(([id, label]) => ({
+  id,
+  label,
+}));
+const horas = Array.from({ length: 24 }, (_, i) => ({
+  id: i,
+  label: `${i.toString().padStart(2, "0")}:00`,
 }));
 
-// 7. CARRETERA (Códigos DGT)
-const carreteras = [
-  { id: "0", label: "Casco Urbano / Otros" },
-  { id: "1", label: "Red Carreteras del Estado" },
-  { id: "6", label: "Autovía / Autopista" }
-];
+const meses = Object.entries(MAPPINGS.MES).map(([id, label]) => ({
+  id,
+  label,
+}));
 ---
-<section id="simulador" class="py-20 px-4">
-  <div class="max-w-3xl mx-auto relative">
-    <div class="absolute -top-10 -right-10 w-32 h-32 bg-forest-500/5 rounded-full border border-forest-500/10 animate-pulse"></div>
 
-    <div class="bg-ocean-950/80 backdrop-blur-3xl border border-white/10 rounded-4xl shadow-2xl overflow-hidden">
-      <div class="bg-white/5 p-6 md:p-10 border-b border-white/10">
-        <div class="flex items-center gap-4 mb-4">
-          <div class="w-3 h-3 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]"></div>
-          <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-          <div class="w-3 h-3 rounded-full bg-green-500"></div>
-          <span class="ml-auto text-[10px] font-mono text-white/30 uppercase tracking-[0.3em]">ML Processor Active</span>
+<section id="simulador" class="py-24 px-4">
+  <div class="max-w-7xl mx-auto">
+    <div
+      class="flex flex-col lg:flex-row bg-ocean-950/40 backdrop-blur-3xl border border-white/10 rounded-[3rem] shadow-2xl overflow-hidden relative"
+    >
+      <div
+        class="hidden lg:flex absolute left-[33.33%] top-0 bottom-0 -translate-x-1/2 w-8 z-20 flex-col items-center justify-between py-12 pointer-events-none"
+      >
+        <div class="w-2 h-2 rounded-full bg-white/20 border border-white/10">
         </div>
-        <h3 class="text-3xl font-display font-black text-white italic uppercase tracking-tighter">
-          Risk<span class="text-forest-500">Calc</span> v2.0
-        </h3>
-        <p class="text-white/50 text-xs font-mono mt-2">
-          Configuración de parámetros ambientales y viales para predicción de letalidad mediante XGBoost + SMOTE.
-        </p>
+        <div
+          class="w-[1px] h-full bg-gradient-to-b from-transparent via-white/10 to-transparent"
+        >
+        </div>
+        <div
+          class="w-4 h-8 border-x border-white/10 flex flex-col justify-around items-center"
+        >
+          <div class="w-full h-[1px] bg-white/10"></div>
+          <div class="w-full h-[1px] bg-white/10"></div>
+        </div>
+        <div
+          class="w-[1px] h-full bg-gradient-to-t from-transparent via-white/10 to-transparent"
+        >
+        </div>
+        <div class="w-2 h-2 rounded-full bg-white/20 border border-white/10">
+        </div>
       </div>
 
-      <form id="form-predict" class="p-6 md:p-10 space-y-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-          
-          <SimuladorField
-            id="PROVINCIA"
-            label="Provincia"
-            options={provincias.map(p => ({ id: p, label: p }))}
-            number="01"
-            required={true}
-          />
-
-          <SimuladorField
-            id="TIPO_VIA_NOMBRE"
-            label="Tipo de Vía"
-            options={vias}
-            number="02"
-            required={true}
-          />
-
-          <SimuladorField
-            id="HORA"
-            label="Hora del Incidente"
-            options={Array.from({length: 24}, (_, i) => ({ id: i.toString(), label: `${i}:00h` }))}
-            number="03"
-            required={true}
-          />
-
-          <SimuladorField
-            id="MES"
-            label="Mes"
-            options={[
-              { id: "1", label: "Enero" }, { id: "2", label: "Febrero" }, { id: "3", label: "Marzo" },
-              { id: "4", label: "Abril" }, { id: "5", label: "Mayo" }, { id: "6", label: "Junio" },
-              { id: "7", label: "Julio" }, { id: "8", label: "Agosto" }, { id: "9", label: "Septiembre" },
-              { id: "10", label: "Octubre" }, { id: "11", label: "Noviembre" }, { id: "12", label: "Diciembre" }
-            ]}
-            number="04"
-            required={true}
-          />
-
-          <SimuladorField
-            id="DIA_SEMANA"
-            label="Día de la Semana"
-            options={[
-              { id: "LUNES", label: "Lunes" }, { id: "MARTES", label: "Martes" },
-              { id: "MIÉRCOLES", label: "Miércoles" }, { id: "JUEVES", label: "Jueves" },
-              { id: "VIERNES", label: "Viernes" }, { id: "SÁBADO", label: "Sábado" },
-              { id: "DOMINGO", label: "Domingo" }
-            ]}
-            number="05"
-            required={true}
-          />
-
-          <SimuladorField
-            id="CONDICION_METEO"
-            label="Meteorología"
-            options={climas}
-            number="06"
-            required={true}
-          />
-
-          <SimuladorField
-            id="CONDICION_ILUMINACION"
-            label="Iluminación"
-            options={[
-              { id: "PLENO DÍA", label: "Pleno Día" },
-              { id: "CREPÚSCULO", label: "Crepúsculo" },
-              { id: "NOCTURNA SIN ALUMBRADO", label: "Noche Sin Alumbrado" },
-              { id: "NOCTURNA CON ALUMBRADO", label: "Noche Con Alumbrado" }
-            ]}
-            number="07"
-            required={true}
-          />
-
-          <SimuladorField
-            id="TIPO_ACCIDENTE_NOMBRE"
-            label="Tipo de Accidente"
-            options={tiposAccidente}
-            number="08"
-            required={true}
-          />
-
-          <SimuladorField
-            id="CARRETERA"
-            label="Titularidad de Vía"
-            options={[
-              { id: "0", label: "Urbana / No Especificado" },
-              { id: "1", label: "Interurbana / Nacional" },
-              { id: "6", label: "Autovía / Autopista" }
-            ]}
-            number="09"
-            required={true}
-            fullWidth={true}
-          />
+      <div
+        class="flex-1 p-10 md:p-14 bg-white/[0.02] border-b lg:border-b-0 lg:border-r border-white/10 relative overflow-hidden group"
+      >
+        <div
+          class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_0%_0%,rgba(16,185,129,0.05)_0%,transparent_50%)]"
+        >
         </div>
 
-        <button
-          type="submit"
-          class="w-full cursor-pointer relative group overflow-hidden bg-forest-500 hover:bg-forest-400 text-white font-black py-5 rounded-2xl transition-all uppercase tracking-[0.3em] text-[10px]"
-        >
-          <span class="relative z-10">Ejecutar Análisis Predictivo</span>
-        </button>
-      </form>
+        <div class="relative z-10 space-y-10">
+          <div class="space-y-4">
+            <div class="flex items-center gap-3">
+              <span
+                class="px-2 py-1 bg-forest-500/10 border border-forest-500/20 text-forest-500 text-[9px] font-mono uppercase tracking-widest rounded"
+              >
+                Engine Status: Operational
+              </span>
+              <div class="h-[1px] flex-1 bg-white/5"></div>
+            </div>
+            <h3
+              class="text-4xl font-display font-black text-white leading-tight uppercase italic"
+            >
+              Data <span class="text-forest-500">Core</span>
+            </h3>
+            <div class="space-y-3">
+              <p class="text-white/70 text-base leading-relaxed font-light">
+                Este núcleo procesa una red neuronal entrenada con <span
+                  class="text-white font-semibold"
+                  >+500,000 registros históricos</span
+                > de la DGT para identificar patrones de letalidad.
+              </p>
+              <p class="text-white/40 text-sm leading-relaxed">
+                El algoritmo analiza la correlación entre la infraestructura, la
+                visibilidad y el factor temporal para calcular la probabilidad
+                de un desenlace crítico.
+              </p>
+            </div>
+          </div>
 
-      <SimuladorResult />
+          <div class="space-y-8">
+            <div class="group/item transition-all">
+              <div class="flex justify-between items-end mb-2">
+                <div class="flex flex-col">
+                  <span
+                    class="text-[10px] font-mono text-forest-500 uppercase tracking-tighter"
+                    >Dominancia de Entorno</span
+                  >
+                  <span class="text-[11px] text-white/30 italic"
+                    >Impacto del tipo de vía en la decisión</span
+                  >
+                </div>
+                <span class="text-sm font-mono text-white font-bold">47.8%</span
+                >
+              </div>
+              <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                <div
+                  class="h-full bg-forest-500 w-[47.8%] shadow-[0_0_15px_rgba(16,185,129,0.4)]"
+                >
+                </div>
+              </div>
+            </div>
+
+            <div class="group/item transition-all">
+              <div class="flex justify-between items-end mb-2">
+                <div class="flex flex-col">
+                  <span
+                    class="text-[10px] font-mono text-red-400 uppercase tracking-tighter"
+                    >Tasa de Sensibilidad (Recall)</span
+                  >
+                  <span class="text-[11px] text-white/30 italic"
+                    >Capacidad de detección de casos fatales</span
+                  >
+                </div>
+                <span class="text-sm font-mono text-white font-bold">66.0%</span
+                >
+              </div>
+              <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                <div
+                  class="h-full bg-red-500 w-[66%] shadow-[0_0_15px_rgba(239,68,68,0.4)]"
+                >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <details
+            class="group/note bg-black/40 border border-white/5 rounded-2xl relative overflow-hidden transition-all duration-300"
+          >
+            <summary
+              class="list-none cursor-pointer p-5 flex items-center justify-between group-hover:bg-white/[0.02]"
+            >
+              <div
+                class="absolute -top-2 -left-2 w-4 h-4 border-t border-l border-forest-500/50"
+              >
+              </div>
+
+              <div class="flex items-center gap-3">
+                <span
+                  class="text-forest-500 font-bold text-[12px] tracking-widest uppercase"
+                  >Lógica Preventiva</span
+                >
+                <span
+                  class="text-[10px] text-white/20 font-mono hidden md:inline-block"
+                  >/ / Click para expandir</span
+                >
+              </div>
+
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-4 h-4 text-forest-500 transition-transform duration-300 group-open/note:rotate-180"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </summary>
+
+            <div class="px-5 pb-5 animate-fadeIn">
+              <div class="h-[1px] w-full bg-white/5 mb-4"></div>
+              <p class="text-[12px] text-white/50 leading-relaxed italic">
+                A diferencia de modelos estándar, este sistema está penalizado
+                estadísticamente para evitar
+                <span class="text-white/80 font-medium">"falsos negativos"</span
+                >. Es decir, ante la duda razonable, el modelo elevará el nivel
+                de riesgo para priorizar la seguridad del usuario frente a una
+                falsa sensación de confianza.
+              </p>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div
+        class="flex-[2] p-10 md:p-16 relative bg-gradient-to-br from-transparent to-ocean-900/20"
+      >
+        <div class="flex items-center justify-between mb-10">
+          <div>
+            <h3
+              class="text-2xl font-black text-white tracking-tight uppercase italic"
+            >
+              Entrada de Parámetros
+            </h3>
+            <p
+              class="text-white/30 text-[10px] uppercase tracking-[0.2em] mt-1"
+            >
+              Configure las variables del escenario actual
+            </p>
+          </div>
+          <div
+            class="flex items-center gap-3 bg-black/20 px-4 py-2 rounded-full border border-white/5"
+          >
+            <div
+              class="w-2 h-2 rounded-full bg-forest-500 animate-pulse shadow-[0_0_8px_#10b981]"
+            >
+            </div>
+            <span
+              class="text-[10px] font-mono text-white/50 uppercase tracking-widest"
+              >Ready</span
+            >
+          </div>
+        </div>
+
+        <form id="form-predict" class="space-y-10">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
+            <SimuladorField
+              id="PROVINCIA"
+              label="Localización"
+              options={provincias}
+              number="01"
+            />
+            <SimuladorField
+              id="HORA"
+              label="Franja Horaria"
+              options={horas}
+              number="02"
+            />
+            <SimuladorField
+              id="MES"
+              label="Mes del Año"
+              options={meses}
+              number="03"
+            />
+            <SimuladorField
+              id="TIPO_VIA_NOMBRE"
+              label="Tipo de Vía"
+              options={vias}
+              number="04"
+            />
+            <SimuladorField
+              id="CONDICION_METEO"
+              label="Estado Climático"
+              options={climas}
+              number="05"
+            />
+            <SimuladorField
+              id="CONDICION_ILUMINACION"
+              label="Visibilidad"
+              options={luces}
+              number="06"
+            />
+
+            <div class="hidden">
+              <SimuladorField
+                id="ZONA_AGRUPADA"
+                label="Entorno"
+                options={zonas}
+                number="--"
+              />
+            </div>
+          </div>
+
+          <HolographicButton />
+
+          <SimuladorResult />
+        </form>
+      </div>
     </div>
   </div>
-</section>
 
-<style>
-  @keyframes shine {
-    100% {
-      left: 125%;
+  <style>
+    /* Animación suave para el contenido */
+    .animate-fadeIn {
+      animation: fadeIn 0.4s ease-out forwards;
     }
-  }
-  select option {
-    background-color: #0a192f;
-    color: white;
-  }
-</style>
-<script>
-  const form = document.getElementById("form-predict");
-  const resContainer = document.getElementById("resultado-container");
-  const resCat = document.getElementById("res-categoria");
-  const resProb = document.getElementById("res-prob");
-  const resBar = document.getElementById("res-bar");
 
-  form?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    if (!resContainer || !resCat || !resProb || !resBar) return;
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-5px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-    resContainer.classList.remove("hidden");
-    resCat.innerText = "Calculando...";
-    resCat.style.color = "#9ca3af"; // Color gris mientras calcula
-    resBar.style.width = "0%";
+    /* Ocultar la flecha por defecto de Chrome/Safari */
+    details summary::-webkit-details-marker {
+      display: none;
+    }
+  </style>
+  <script>
+    const form = document.getElementById("form-predict") as HTMLFormElement;
+    const resContainer = document.getElementById("resultado-container");
+    const resCat = document.getElementById("res-categoria");
+    const resProb = document.getElementById("res-prob");
+    const resBar = document.getElementById("res-bar");
 
-    const formData = new FormData(form);
+    // Selectores para automatización
+    const selectVia = document.getElementById(
+      "TIPO_VIA_NOMBRE"
+    ) as HTMLSelectElement;
+    const selectZona = document.getElementById(
+      "ZONA_AGRUPADA"
+    ) as HTMLSelectElement;
+    const selectHora = document.getElementById("HORA") as HTMLSelectElement;
+    const selectLuz = document.getElementById(
+      "CONDICION_ILUMINACION"
+    ) as HTMLSelectElement;
 
-    // Obtener día actual correctamente
-    const dias = [
-      "DOMINGO",
-      "LUNES",
-      "MARTES",
-      "MIÉRCOLES",
-      "JUEVES",
-      "VIERNES",
-      "SÁBADO",
-    ];
-    const diaActual = dias[new Date().getDay()];
+    // --- LOGICA DE AUTOMATIZACIÓN ---
 
-    // Datos EXACTAMENTE como espera el modelo
-    const data = {
-      HORA: new Date().getHours(),
-      MES: new Date().getMonth() + 1,
-      DIA_SEMANA: diaActual,
-      PROVINCIA: formData.get("PROVINCIA"),
-      TIPO_VIA_NOMBRE: formData.get("TIPO_VIA_NOMBRE"),
-      CONDICION_METEO: formData.get("CONDICION_METEO"),
-      CONDICION_ILUMINACION: formData.get("CONDICION_ILUMINACION"),
-      TIPO_ACCIDENTE_NOMBRE: formData.get("TIPO_ACCIDENTE_NOMBRE") || "OTRO",
-      CARRETERA: formData.get("CARRETERA") || "0",
-      // Opcionales que puedes enviar si quieres
-      CONDICION_FIRME: formData.get("CONDICION_FIRME") || "SECO",
-      TRAZADO_PLANTA: formData.get("TRAZADO_PLANTA") || "RECTA",
+    // 1. Relación Vía -> Zona
+    const viaToZona = {
+      "1": "1",
+      "2": "1",
+      "3": "1",
+      "4": "1",
+      "5": "1",
+      "6": "1",
+      "7": "1",
+      "8": "1",
+      "10": "1",
+      "14": "1", // Interurbanas
+      "9": "2",
+      "11": "2",
+      "12": "2",
+      "13": "2", // Urbanas
     };
 
-    console.log("📤 Enviando datos:", data);
-
-    try {
-      const response = await fetch("http://127.0.0.1:8000/predict", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+    selectVia?.addEventListener("change", () => {
+      const zonaSugerida = viaToZona[selectVia.value];
+      if (zonaSugerida && selectZona) {
+        selectZona.value = zonaSugerida;
       }
+    });
 
-      const result = await response.json();
-      console.log("📥 Respuesta recibida:", result);
+    // 2. Relación Hora -> Iluminación (Opcional pero muy útil)
+    selectHora?.addEventListener("change", () => {
+      const hora = parseInt(selectHora.value);
+      if (selectLuz) {
+        if (hora >= 8 && hora <= 18)
+          selectLuz.value = "1"; // Luz del día
+        else if (hora >= 19 && hora <= 21)
+          selectLuz.value = "3"; // Ocaso con luz art.
+        else selectLuz.value = "4"; // Noche con luz art. (asumimos ciudad/vía ilum)
+      }
+    });
 
-      // Animación suave de la barra
-      setTimeout(() => {
-        resCat.innerText = result.categoria;
-        resCat.style.color = result.color;
-        resProb.innerText = `${result.probabilidad}%`;
-        resBar.style.backgroundColor = result.color;
+    // --- GESTIÓN DEL ENVÍO (SUBMIT) ---
 
-        // Animación progresiva de la barra
-        let width = 0;
-        const interval = setInterval(() => {
-          if (width >= result.probabilidad) {
-            clearInterval(interval);
-          } else {
-            width += 1;
-            resBar.style.width = `${width}%`;
-          }
-        }, 10);
-      }, 300);
-    } catch (error) {
-      console.error("❌ Error:", error);
-      resCat.innerText = "Error";
-      resCat.style.color = "#ef4444";
-      resProb.innerText = "0%";
-      resBar.style.width = "0%";
-      resBar.style.backgroundColor = "#ef4444";
+    form?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!resContainer || !resCat || !resProb || !resBar) return;
 
-      setTimeout(() => {
-        alert(
-          "Error: No se pudo conectar con el servidor AI.\nAsegúrate de que la API está corriendo en http://127.0.0.1:8000"
-        );
-      }, 500);
-    }
-  });
+      resContainer.classList.remove("hidden");
+      resCat.innerText = "Procesando...";
+      resBar.style.width = "10%";
 
-  // Función opcional para obtener categorías válidas de la API
-  async function cargarCategorias() {
-    try {
-      const response = await fetch("http://127.0.0.1:8000/categorias");
-      const categorias = await response.json();
-      console.log("Categorías disponibles:", categorias);
-      // Aquí podrías actualizar dinámicamente los selects si quisieras
-    } catch (error) {
-      console.log(
-        "No se pudieron cargar categorías, usando valores por defecto"
-      );
-    }
-  }
+      const formData = new FormData(form);
+      const dayMap = ["7", "1", "2", "3", "4", "5", "6"];
+      const diaActual = dayMap[new Date().getDay()];
 
-  // Llamar al cargar la página (opcional)
-  // cargarCategorias();
-</script>
+      const data = {
+        HORA: parseInt(formData.get("HORA") as string),
+        MES: parseInt(formData.get("MES") as string),
+        DIA_SEMANA: diaActual,
+        PROVINCIA: formData.get("PROVINCIA"),
+        TIPO_VIA_NOMBRE: formData.get("TIPO_VIA_NOMBRE"),
+        CONDICION_METEO: formData.get("CONDICION_METEO"),
+        CONDICION_ILUMINACION: formData.get("CONDICION_ILUMINACION"),
+        ZONA_AGRUPADA: formData.get("ZONA_AGRUPADA"),
+      };
+
+      try {
+        const response = await fetch("http://127.0.0.1:8000/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+
+        if (!response.ok) throw new Error("Error en la respuesta de la API");
+
+        const result = await response.json();
+
+        setTimeout(() => {
+          resCat.innerText = result.categoria;
+          resCat.style.color = result.color;
+          resProb.innerText = `${result.probabilidad}%`;
+          resBar.style.backgroundColor = result.color;
+          resBar.style.width = `${result.probabilidad}%`;
+        }, 500);
+      } catch (error) {
+        console.error("API Error:", error);
+        resCat.innerText = "Error de Conexión";
+        resCat.style.color = "#ef4444";
+      }
+    });
+  </script>
+</section>

@@ -64,12 +64,13 @@ async def predict(data: AccidenteData):
         prob_perc = round(float(prob) * 100, 2)
         
         # Clasificación de riesgo (basada en tu Recall de 0.66)
-        if prob_perc < 10:
-            res, col = "Bajo", "#10b981"
-        elif prob_perc < 30:
-            res, col = "Moderado", "#f59e0b"
+        # Lógica de respuesta sugerida
+        if prob_perc < 15:
+            res, col = "Bajo", "#10b981"      # Verde (Escenario 4: 7.41%)
+        elif prob_perc < 45:
+            res, col = "Moderado", "#f59e0b"  # Ámbar (Escenario 1: 32.08%)
         else:
-            res, col = "Crítico", "#ef4444"
+            res, col = "Crítico", "#ef4444"   # Rojo (Escenarios 2, 3 y 5)
 
         return {
             "probabilidad": prob_perc,

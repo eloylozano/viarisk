@@ -1,0 +1,31 @@
+---
+// SimuladorButton.astro
+---
+<button
+  type="submit"
+  class="w-full cursor-pointer relative group overflow-hidden bg-white/10 backdrop-blur-md border border-forest-500/40 text-forest-500 font-black py-7 rounded-[1rem] transition-all duration-700 uppercase tracking-[0.4em] text-[11px] shadow-[0_10px_30px_rgba(0,0,0,0.1)] hover:shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:border-forest-400 hover:bg-white/20"
+>
+  <div class="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent"></div>
+
+  <div class="absolute inset-0 opacity-[0.05] group-hover:opacity-[0.15] transition-opacity bg-[linear-gradient(transparent_0%,rgba(16,185,129,0.8)_50%,transparent_100%)] bg-[length:100%_6px] animate-[scan_3s_linear_infinite]"></div>
+
+  <div class="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-25"></div>
+
+  <span class="relative z-10 group-hover:text-ocean-900 text-forest-900 transition-colors duration-500 group-hover:scale-105 inline-block transform">
+    Ejecutar Análisis Predictivo
+  </span>
+
+  <div class="absolute top-3 left-8 w-3 h-[1.5px] bg-forest-500/60 shadow-[0_0_5px_rgba(16,185,129,0.4)]"></div>
+  <div class="absolute top-3 right-8 w-3 h-[1.5px] bg-forest-500/60 shadow-[0_0_5px_rgba(16,185,129,0.4)]"></div>
+  <div class="absolute bottom-3 left-8 w-3 h-[1.5px] bg-forest-500/60 shadow-[0_0_5px_rgba(16,185,129,0.4)]"></div>
+  <div class="absolute bottom-3 right-8 w-3 h-[1.5px] bg-forest-500/60 shadow-[0_0_5px_rgba(16,185,129,0.4)]"></div>
+
+  <div class="absolute inset-0 bg-forest-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+</button>
+
+<style>
+  @keyframes scan {
+    from { background-position: 0 0; }
+    to { background-position: 0 100%; }
+  }
+</style>

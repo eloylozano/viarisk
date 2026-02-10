@@ -18,27 +18,18 @@ export const MAPPINGS = {
         49: "Zamora", 50: "Zaragoza", 51: "Ceuta", 52: "Melilla"
     },
     TIPO_VIA_NOMBRE: {
-        1: "Autopista Peaje", 2: "Autopista Libre", 3: "Autovía", 4: "Vía Automóviles",
-        5: "Convencional Doble", 6: "Convencional Única", 7: "Vía Servicio", 8: "Enlace",
-        9: "Calle", 10: "Camino", 11: "Recinto", 12: "Vía Ciclista", 13: "Senda Ciclab.", 14: "Otro"
-    },
-    TIPO_ACCIDENTE_NOMBRE: {
-        1: "Frontal", 2: "Fronto-lateral", 3: "Lateral", 4: "Alcance", 5: "Múltiple",
-        6: "Choque Obstáculo", 7: "Atropello Persona", 8: "Atropello Animal", 9: "Vuelco",
-        10: "Caída", 11: "Salida Vía", 12: "Salida Izq (Colisión)", 13: "Salida Izq (Despeñe)",
-        14: "Salida Izq (Vuelco)", 15: "Salida Izq (Otro)", 16: "Salida Der (Colisión)",
-        17: "Salida Der (Despeñe)", 18: "Salida Der (Vuelco)", 19: "Salida Der (Otro)", 20: "Otro"
+        1: "Autopista de peaje", 2: "Autopista libre", 3: "Autovía", 4: "Vía para automóviles",
+        5: "Convencional con doble carril", 6: "Convencional único carril", 7: "Vía de servicio", 9: "Calle", 10: "Camino vecinal", 14: "Otro"
     },
     CONDICION_METEO: {
         1: "Despejado", 2: "Nublado", 3: "Lluvia débil", 4: "Lluvia fuerte",
-        5: "Granizando", 6: "Nieve", 7: "Se desconoce", 999: "Sin especificar"
+        5: "Granizando", 6: "Nevando", 999: "Otro"
     },
     CONDICION_ILUMINACION: {
-        1: "Luz del día", 2: "Ocaso (sin luz art.)", 3: "Ocaso (con luz art.)",
-        4: "Noche (ilum. ON)", 5: "Noche (ilum. OFF)", 6: "Noche (sin ilum.)", 999: "Sin especificar"
+        1: "Luz del día natural", 2: "Amanecer/Atardecer sin alumbrado",
+        3: "Amanecer/Atardecer con alumbrado", 4: "Noche con luz", 6: "Noche a oscuras", 999: "Otro"
     },
-    CONDICION_FIRME: {
-        1: "Seco y limpio", 2: "Húmedo", 3: "Mojado", 4: "Hielo",
-        5: "Nieve", 6: "Gravilla", 7: "Aceite", 8: "Barro", 9: "Otros", 999: "Sin especificar"
+    ZONA_AGRUPADA: {
+        1: "Vías Interurbanas", 2: "Vías Urbanas"
     }
 };
