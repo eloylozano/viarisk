@@ -2,59 +2,121 @@
 // src/components/DisclaimerModal.astro
 ---
 
-<div id="disclaimer-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-    <div class="max-w-xl w-full bg-ocean-950 border border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
-      <div class="absolute -top-24 -right-24 w-48 h-48 bg-forest-500/10 rounded-full blur-3xl"></div>
-  
-      <div class="relative z-10 text-center">
-        <div class="w-16 h-16 bg-forest-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-forest-500/30">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-forest-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
-  
-        <h3 class="text-2xl font-display font-black text-white uppercase tracking-tighter italic mb-4">
-          Aviso del <span class="text-forest-500">Laboratorio</span>
-        </h3>
-  
-        <div class="space-y-4 text-white/60 text-sm leading-relaxed text-left font-mono">
-          <p>
-            Este sistema es un <strong class="text-white">estudio experimental</strong> basado en modelos de Machine Learning entrenados con macrodatos históricos de la DGT.
-          </p>
-          <p>
-            Los resultados son <span class="text-forest-500">estimaciones estadísticas</span> y no deben tomarse como predicciones reales o compromisos de seguridad. El autor no se responsabiliza del uso de esta información ni de posibles errores en las muestras.
-          </p>
-          <p class="text-[10px] uppercase tracking-widest text-white/30 border-t border-white/5 pt-4">
-            Fuente de datos: Microdatos DGT | Proyecto con fines académicos.
-          </p>
-        </div>
-  
-        <button
-          id="close-disclaimer"
-          class="w-full mt-8 bg-forest-500 hover:bg-forest-400 text-white font-black py-4 rounded-xl transition-all uppercase tracking-[0.2em] text-xs cursor-pointer shadow-lg shadow-forest-500/20"
+<div
+  id="disclaimer-modal"
+  class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/90 backdrop-blur-md"
+>
+  <div
+    class="max-w-xl w-full bg-ocean-950 border border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden"
+  >
+    <div
+      class="absolute -top-24 -right-24 w-48 h-48 bg-forest-500/10 rounded-full blur-3xl"
+    >
+    </div>
+
+    <div class="relative z-10 text-center">
+      <div
+        class="w-16 h-16 bg-forest-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-forest-500/30"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-8 w-8 text-forest-500"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
         >
-          Entiendo y Acepto
-        </button>
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          ></path>
+        </svg>
       </div>
+
+      <h3
+        class="text-2xl font-display font-black text-white uppercase tracking-tighter italic mb-4"
+      >
+        Aviso del <span class="text-forest-500">Laboratorio</span>
+      </h3>
+
+      <div
+        class="space-y-4 text-white/60 text-sm leading-relaxed text-left font-mono"
+      >
+        <p>
+          Este sistema es un <strong class="text-white"
+            >estudio experimental</strong
+          > basado en modelos de Machine Learning entrenados con macrodatos históricos
+          de la DGT.
+        </p>
+        <p>
+          Los resultados son <span class="text-forest-500"
+            >estimaciones estadísticas</span
+          > y no deben tomarse como predicciones reales o compromisos de seguridad.
+          El autor no se responsabiliza del uso de esta información ni de posibles
+          errores en las muestras.
+        </p>
+        <p
+          class="text-[10px] uppercase tracking-widest text-white/30 border-t border-white/5 pt-4"
+        >
+          Fuente de datos: Microdatos DGT | Proyecto con fines académicos.
+        </p>
+      </div>
+
+      <button
+        id="close-disclaimer"
+        class="w-full mt-8 bg-forest-500 hover:bg-forest-400 text-white font-black py-4 rounded-xl transition-all uppercase tracking-[0.2em] text-xs cursor-pointer shadow-lg shadow-forest-500/20"
+      >
+        Entiendo y Acepto
+      </button>
     </div>
   </div>
-  
-  <script>
-    const modal = document.getElementById('disclaimer-modal');
-    const closeBtn = document.getElementById('close-disclaimer');
-  
-    // Lógica de persistencia
-    const hasAccepted = localStorage.getItem('viarisk-disclaimer-accepted');
-  
-    if (!hasAccepted && modal) {
-      modal.classList.remove('hidden');
-      // Evitar scroll del body cuando el modal está abierto
-      document.body.style.overflow = 'hidden';
+</div>
+
+<script>
+  const setupModal = () => {
+    const modal = document.getElementById("disclaimer-modal");
+    const closeBtn = document.getElementById("close-disclaimer");
+
+    // Función de apertura
+    const openModal = () => {
+      if (modal) {
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+        document.body.style.overflow = "hidden";
+      }
+    };
+
+    // Función de cierre
+    const closeModal = () => {
+      if (modal) {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        document.body.style.overflow = "auto";
+      }
+    };
+
+    // Lógica auto-apertura
+    const hasAccepted = localStorage.getItem("viarisk-disclaimer-accepted");
+    if (!hasAccepted) {
+      openModal();
     }
-  
-    closeBtn?.addEventListener('click', () => {
-      localStorage.setItem('viarisk-disclaimer-accepted', 'true');
-      modal?.classList.add('hidden');
-      document.body.style.overflow = 'auto';
+
+    // Eventos de botones
+    closeBtn?.addEventListener("click", () => {
+      localStorage.setItem("viarisk-disclaimer-accepted", "true");
+      closeModal();
     });
-  </script>
+
+    // IMPORTANTE: Limpiar el evento anterior antes de añadirlo 
+    // para evitar duplicados si usas ViewTransitions
+    window.removeEventListener("open-disclaimer", openModal);
+    window.addEventListener("open-disclaimer", openModal);
+  };
+
+  // Ejecución inicial
+  setupModal();
+
+  // Reiniciar tras cambios de página en Astro
+  document.addEventListener("astro:after-swap", setupModal);
+</script>
