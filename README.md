@@ -1,4 +1,4 @@
-# 🛡️ ViaRisk: Inteligencia Artificial Aplicada a la Seguridad Vial
+# ViaRisk: Inteligencia Artificial Aplicada a la Seguridad Vial
 
 **ViaRisk** es un ecosistema avanzado de análisis y predicción de riesgo de accidentes viales en España. Utiliza modelos de **Machine Learning (XGBoost)** entrenados con microdatos abiertos de la **DGT** para transformar datos históricos en herramientas preventivas en tiempo real.
 
@@ -51,7 +51,7 @@ El "cerebro" de ViaRisk es un clasificador optimizado que alcanza un equilibrio 
 | **Machine Learning** | XGBoost, Scikit-learn, Joblib |
 | **Backend API** | FastAPI, Uvicorn, Pydantic |
 | **Frontend** | Astro, Tailwind CSS 4, JavaScript (ES6+) |
-| **Deployment** | Railway, GitHub Actions |
+| **Deployment** | Railway, Vercel |
 
 ---
 
